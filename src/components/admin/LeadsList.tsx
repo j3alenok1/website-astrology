@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { formatDate } from '@/lib/utils'
 import { Download, Eye, CheckCircle, XCircle, Clock } from 'lucide-react'
 
@@ -29,11 +29,7 @@ export function LeadsList() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
 
-  useEffect(() => {
-    fetchLeads()
-  }, [selectedStatus, page])
-
-  const fetchLeads = async () => {
+  const fetchLeads = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams({
@@ -54,7 +50,11 @@ export function LeadsList() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedStatus, page])
+
+  useEffect(() => {
+    fetchLeads()
+  }, [fetchLeads])
 
   const updateLeadStatus = async (id: string, status: string) => {
     try {
