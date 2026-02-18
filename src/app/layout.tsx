@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
 import { MetaPixel } from '@/components/MetaPixel'
+import { StructuredData } from '@/components/StructuredData'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
 
@@ -14,27 +15,79 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'ASTRO by NDAUZH',
+  title: {
+    default: 'ASTRO by NDAUZH — Астролог, Таро, Консультации онлайн',
+    template: '%s | ASTRO by NDAUZH',
+  },
   description:
-    'Персональные астрологические и тарологические разборы с психологическим сопровождением от Сачковой Марии Геннадьевны. Осознанные решения, ясность в отношениях и карьере.',
-  keywords:
-    'Сачкова Мария Геннадьевна, астролог, консультации по астрологии, таро, психологическая консультация, разбор натальной карты, совместимость, годовой прогноз',
-  authors: [{ name: 'ASTRO by NDAUZH' }],
+    'Персональные астрологические и тарологические консультации. Разбор натальной карты, соляр, совместимость, детская карта, профориентация. Онлайн по всему миру. Россия, Казахстан.',
+  keywords: [
+    'астролог',
+    'астролог онлайн',
+    'консультация астролога',
+    'таро',
+    'таро консультация',
+    'таро онлайн',
+    'расклад таро',
+    'консультация таролога',
+    'разбор натальной карты',
+    'натальная карта',
+    'натальная карта разбор',
+    'соляр',
+    'соляр на год',
+    'годовой прогноз астрология',
+    'совместимость по дате рождения',
+    'совместимость партнёров',
+    'детская карта астрология',
+    'астрология дети',
+    'профориентация астрология',
+    'астропортрет',
+    'кармический урок',
+    'психологическая астрология',
+    'психологическая консультация',
+    'астрология отношения',
+    'астрология карьера',
+    'астрология деньги',
+    'астролог Россия',
+    'астролог Казахстан',
+    'астролог Алматы',
+    'астролог Москва',
+    'таро Россия',
+    'таро Казахстан',
+    'таро Алматы',
+    'консультация онлайн',
+    'запись к астрологу',
+    'ASTRO by NDAUZH',
+    'Сачкова Мария',
+  ].join(', '),
+  authors: [{ name: 'ASTRO by NDAUZH', url: 'https://astrobyndauzh.com' }],
+  creator: 'ASTRO by NDAUZH',
+  publisher: 'ASTRO by NDAUZH',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
-    title: 'ASTRO by NDAUZH',
+    title: 'ASTRO by NDAUZH — Астролог, Таро, Консультации',
     description:
-      'Персональные астрологические и тарологические разборы с психологическим сопровождением. Интеллектуальный подход к вашим запросам.',
+      'Персональные астрологические и тарологические консультации. Разбор натальной карты, соляр, совместимость. Онлайн по всему миру.',
     type: 'website',
     locale: 'ru_RU',
+    url: '/',
+    siteName: 'ASTRO by NDAUZH',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ASTRO by NDAUZH',
-    description: 'Интеллектуальный консультационный сервис',
+    title: 'ASTRO by NDAUZH — Астролог, Таро',
+    description: 'Консультации по астрологии и Таро онлайн. Россия, Казахстан, весь мир.',
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
 }
 
@@ -47,7 +100,8 @@ export default function RootLayout({
     <html lang="ru">
       <head>
         <link rel="icon" href="/favicon-tarot.svg" type="image/svg+xml" />
-        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'} />
+        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'} />
+        <StructuredData />
       </head>
       <body className={inter.className}>
         {children}
