@@ -73,8 +73,19 @@ npm run dev
 ### Vercel (рекомендуется)
 
 1. Подключите репозиторий к Vercel
-2. Добавьте переменные окружения в настройках проекта
-3. Настройте PostgreSQL (можно использовать Vercel Postgres или внешний)
+2. Добавьте переменные окружения в **Settings → Environment Variables**:
+   - `DATABASE_URL` — строка подключения PostgreSQL
+   - `NEXTAUTH_SECRET` — секретный ключ
+   - `NEXTAUTH_URL` — https://ваш-домен.vercel.app
+   - **Для email-уведомлений о заявках (обязательно для получения писем):**
+     - `SMTP_HOST` = `smtp.gmail.com`
+     - `SMTP_PORT` = `587`
+     - `SMTP_USER` = `j3alenok@gmail.com`
+     - `SMTP_PASSWORD` = пароль приложения Gmail (16 символов, создать: [Google App Passwords](https://myaccount.google.com/apppasswords))
+     - `SMTP_FROM` = `j3alenok@gmail.com`
+     - `SMTP_TO` = `j3alenok@gmail.com`
+   - `RECAPTCHA_SECRET_KEY`, `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`
+3. Настройте PostgreSQL (Vercel Postgres или внешний)
 4. Запустите миграции: `npm run db:push`
 5. Создайте админ-пользователя: `npm run db:seed`
 

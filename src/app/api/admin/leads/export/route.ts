@@ -67,9 +67,34 @@ export async function GET(req: NextRequest) {
       toISODate(lead.createdAt),
     ])
 
+    const format = searchParams.get('format') || 'csv'
+    const dateStr = new Date().toISOString().split('T')[0]
+
+    if (format === 'xlsx') {
+      const XLSX = await import('xlsx')
+      const wsData = [headers, ...rows]
+      const ws = XLSX.utils.aoa_to_sheet(wsData)
+      const colWidths = [
+        { wch: 28 }, { wch: 20 }, { wch: 12 }, { wch: 8 }, { wch: 18 }, { wch: 18 },
+        { wch: 18 }, { wch: 40 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 12 },
+      ]
+      ws['!cols'] = colWidths
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Заявки')
+      const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+      return new NextResponse(buf, {
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': `attachment; filename="leads-${dateStr}.xlsx"`,
+        },
+      })
+    }
+
+    // CSV: точка-запятая для Excel (RU/KZ)
+    const delimiter = ';'
     const csv = [
-      headers.join(','),
-      ...rows.map((row) => row.map((cell) => `"${String(cell)}"`).join(',')),
+      headers.join(delimiter),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(delimiter)),
     ].join('\r\n')
 
     const BOM = '\uFEFF'
@@ -78,7 +103,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse(body, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
-        'Content-Disposition': `attachment; filename="leads-${new Date().toISOString().split('T')[0]}.csv"`,
+        'Content-Disposition': `attachment; filename="leads-${dateStr}.csv"`,
       },
     })
   } catch (error) {

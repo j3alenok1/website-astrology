@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { formatDate } from '@/lib/utils'
-import { Download, Eye, CheckCircle, XCircle, Clock } from 'lucide-react'
+import { Download, Eye, CheckCircle, XCircle, Clock, FileSpreadsheet } from 'lucide-react'
 
 interface Lead {
   id: string
@@ -69,9 +69,9 @@ export function LeadsList() {
     }
   }
 
-  const exportCSV = async () => {
+  const exportFile = async (format: 'csv' | 'xlsx') => {
     try {
-      const params = new URLSearchParams()
+      const params = new URLSearchParams({ format })
       if (selectedStatus !== 'all') {
         params.append('status', selectedStatus)
       }
@@ -81,7 +81,7 @@ export function LeadsList() {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `leads-${new Date().toISOString().split('T')[0]}.csv`
+      a.download = `leads-${new Date().toISOString().split('T')[0]}.${format}`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
@@ -125,12 +125,20 @@ export function LeadsList() {
             <option value="archived">Архив</option>
           </select>
           <button
-            onClick={exportCSV}
+            onClick={() => exportFile('xlsx')}
+            className="px-4 py-2 bg-green-600/80 rounded-lg text-white hover:bg-green-500 
+                     transition-colors flex items-center gap-2 border border-green-400/30"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Excel
+          </button>
+          <button
+            onClick={() => exportFile('csv')}
             className="px-4 py-2 bg-purple-600/80 rounded-lg text-white hover:bg-purple-500 
                      transition-colors flex items-center gap-2 border border-purple-400/30"
           >
-            <Download className="w-5 h-5" />
-            Экспорт CSV
+            <Download className="w-4 h-4" />
+            CSV
           </button>
         </div>
         <div className="text-white">
