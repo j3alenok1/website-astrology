@@ -376,12 +376,12 @@ export function BookingForm() {
                     💳 Оплата через Kaspi Pay — счёт придёт в приложение Kaspi.kz
                   </p>
                 )}
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <button
                     type="button"
                     disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
                     onClick={handleSubmit(onSubmit)}
-                    className="flex-1 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 
+                    className="flex-1 px-5 py-2.5 text-sm bg-gradient-to-r from-purple-600 to-pink-600 
                              rounded-full text-white font-semibold hover:from-purple-500 
                              hover:to-pink-500 transition-all duration-300
                              disabled:opacity-50 disabled:cursor-not-allowed"
@@ -392,7 +392,7 @@ export function BookingForm() {
                     type="button"
                     disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
                     onClick={handleSubmit(onPay)}
-                    className="flex-1 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 
+                    className="flex-1 px-5 py-2.5 text-sm bg-gradient-to-r from-green-600 to-emerald-600 
                              rounded-full text-white font-semibold hover:from-green-500 
                              hover:to-emerald-500 transition-all duration-300
                              disabled:opacity-50 disabled:cursor-not-allowed"
@@ -410,7 +410,7 @@ export function BookingForm() {
                 type="button"
                 disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
                 onClick={handleSubmit(onSubmit)}
-                className="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 
+                className="w-full px-5 py-2.5 text-sm bg-gradient-to-r from-purple-600 to-pink-600 
                          rounded-full text-white font-semibold hover:from-purple-500 
                          hover:to-pink-500 transition-all duration-300 cosmic-glow
                          disabled:opacity-50 disabled:cursor-not-allowed"
