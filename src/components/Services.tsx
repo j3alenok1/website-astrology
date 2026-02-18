@@ -68,13 +68,15 @@ export function Services() {
                 className="glass-effect rounded-2xl p-8 hover:bg:white/15 transition-all duration-300 
                          transform hover:scale-105 group"
               >
-                <div
-                  className={`w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
-                               flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
-                >
-                  <Icon className="w-8 h-8 text-white" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div
+                    className={`w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
+                                 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
+                  >
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">{service.title}</h3>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-white">{service.title}</h3>
                 <p className="text-gray-300 leading-relaxed">{service.description}</p>
               </motion.div>
             )
