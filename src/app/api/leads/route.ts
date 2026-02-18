@@ -76,13 +76,14 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
     },
   }
 
-  if (!smtpConfig.host || !smtpConfig.auth.user) {
-    console.warn('SMTP not configured, skipping email notification')
+  if (!smtpConfig.host || !smtpConfig.auth.user || !smtpConfig.auth.pass) {
+    console.error('[LEADS] SMTP не настроен: добавьте SMTP_HOST, SMTP_USER, SMTP_PASSWORD в переменные окружения Vercel')
     return
   }
 
   try {
     const transporter = nodemailer.createTransport(smtpConfig)
+    await transporter.verify()
 
     const requestText = (leadData.request ?? '').replace(/\n/g, '<br>') || '—'
     const [y, m, d] = (leadData.birthDate || '').split('-')
@@ -162,7 +163,11 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
       `,
     })
   } catch (error) {
-    console.error('Email sending error:', error)
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('[LEADS] Ошибка отправки email:', msg)
+    if (error instanceof Error && 'code' in error) {
+      console.error('[LEADS] Код ошибки:', (error as { code?: string }).code)
+    }
   }
 }
 
@@ -277,39 +282,45 @@ export async function POST(req: NextRequest) {
 
     let leadId: string | null = null
 
-    // Save to database (если БД настроена)
-    try {
-      const lead = await prisma.lead.create({
-        data: {
-          name: validatedData.name,
-          birthDate: new Date(validatedData.birthDate),
-          birthTime: validatedData.birthTime,
-          city: validatedData.city,
-          birthCity: validatedData.birthCity,
-          contact: validatedData.contact,
-          request: validatedData.request ?? '',
-          consent: validatedData.consent,
-          utmSource: validatedData.utmSource,
-          utmMedium: validatedData.utmMedium,
-          utmCampaign: validatedData.utmCampaign,
-          utmTerm: validatedData.utmTerm,
-          utmContent: validatedData.utmContent,
-          userAgent,
-          referrer,
-          ipAddress: getRateLimitKey(req),
-        },
-      })
-      leadId = lead.id
-    } catch (dbError) {
-      console.warn('Database save failed (БД не настроена?), отправляем только email:', dbError)
+    // Save to database (только если DATABASE_URL настроен)
+    if (process.env.DATABASE_URL) {
+      try {
+        const lead = await prisma.lead.create({
+          data: {
+            name: validatedData.name,
+            birthDate: new Date(validatedData.birthDate),
+            birthTime: validatedData.birthTime,
+            city: validatedData.city,
+            birthCity: validatedData.birthCity,
+            contact: validatedData.contact,
+            request: validatedData.request ?? '',
+            consent: validatedData.consent,
+            utmSource: validatedData.utmSource,
+            utmMedium: validatedData.utmMedium,
+            utmCampaign: validatedData.utmCampaign,
+            utmTerm: validatedData.utmTerm,
+            utmContent: validatedData.utmContent,
+            userAgent,
+            referrer,
+            ipAddress: getRateLimitKey(req),
+          },
+        })
+        leadId = lead.id
+      } catch (dbError) {
+        console.error('[LEADS] Ошибка сохранения в БД:', dbError)
+      }
     }
 
     // Отправляем уведомления (email — всегда, даже без БД)
-    Promise.all([
-      sendEmailNotification(validatedData),
-      sendToGoogleSheets(validatedData),
-      sendToCRM(validatedData),
-    ]).catch(console.error)
+    try {
+      await Promise.all([
+        sendEmailNotification(validatedData),
+        sendToGoogleSheets(validatedData),
+        sendToCRM(validatedData),
+      ])
+    } catch (notifyErr) {
+      console.error('[LEADS] Ошибка отправки уведомлений:', notifyErr)
+    }
 
     return NextResponse.json({ success: true, id: leadId }, { status: 201 })
   } catch (error) {
