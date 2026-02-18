@@ -96,6 +96,9 @@ export function BookingForm() {
         body: JSON.stringify({
           ...data,
           ...utmParams,
+          productSlug: selectedProduct?.slug,
+          productTitle: selectedProduct?.title,
+          amount: selectedProduct?.amountTiyin,
           recaptchaToken: isRecaptchaActive ? recaptchaValue : undefined,
         }),
       })
@@ -200,7 +203,7 @@ export function BookingForm() {
           className="glass-effect rounded-2xl p-8"
         >
           <form
-            onSubmit={selectedProduct ? handleSubmit(onPay) : handleSubmit(onSubmit)}
+            onSubmit={(e) => e.preventDefault()}
             className="space-y-6"
           >
             {selectedProduct && (
@@ -367,31 +370,46 @@ export function BookingForm() {
             )}
 
             {selectedProduct ? (
-              <>
+              <div className="space-y-3">
                 {/алматы|almaty|алма-ата/i.test((watch('city') || '').trim()) && (
-                  <p className="text-sm text-purple-200 mb-2">
+                  <p className="text-sm text-purple-200">
                     💳 Оплата через Kaspi Pay — счёт придёт в приложение Kaspi.kz
                   </p>
                 )}
-                <button
-                type="submit"
-                disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
-                className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 
-                         rounded-full text-white font-semibold hover:from-green-500 
-                         hover:to-emerald-500 transition-all duration-300
-                         disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting
-                  ? /алматы|almaty|алма-ата/i.test((watch('city') || '').trim())
-                    ? 'Отправка счёта...'
-                    : 'Переход к оплате...'
-                  : `Оплатить ${selectedProduct.price}`}
-              </button>
-              </>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                    onClick={handleSubmit(onSubmit)}
+                    className="flex-1 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 
+                             rounded-full text-white font-semibold hover:from-purple-500 
+                             hover:to-pink-500 transition-all duration-300
+                             disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? 'Отправка...' : 'Записаться'}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                    onClick={handleSubmit(onPay)}
+                    className="flex-1 px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 
+                             rounded-full text-white font-semibold hover:from-green-500 
+                             hover:to-emerald-500 transition-all duration-300
+                             disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting
+                      ? /алматы|almaty|алма-ата/i.test((watch('city') || '').trim())
+                        ? 'Отправка счёта...'
+                        : 'Переход к оплате...'
+                      : `Записаться и оплатить ${selectedProduct.price}`}
+                  </button>
+                </div>
+              </div>
             ) : (
               <button
-                type="submit"
+                type="button"
                 disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                onClick={handleSubmit(onSubmit)}
                 className="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 
                          rounded-full text-white font-semibold hover:from-purple-500 
                          hover:to-pink-500 transition-all duration-300 cosmic-glow

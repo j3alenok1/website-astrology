@@ -14,6 +14,9 @@ interface Lead {
   contact: string
   request: string
   status: string
+  productSlug?: string | null
+  productTitle?: string | null
+  amount?: number | null
   utmSource?: string | null
   utmMedium?: string | null
   utmCampaign?: string | null
@@ -152,6 +155,7 @@ export function LeadsList() {
             <thead className="bg-white/10">
               <tr>
                 <th className="px-6 py-4 text-left text-white font-semibold">Имя</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Продукт</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Контакты</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Город</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Город рождения</th>
@@ -164,6 +168,15 @@ export function LeadsList() {
               {leads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4 text-white">{lead.name}</td>
+                  <td className="px-6 py-4 text-gray-300">
+                    {lead.productTitle ? (
+                      <span title={lead.amount ? `${(lead.amount / 100).toLocaleString('ru-KZ')} ₸` : ''}>
+                        {lead.productTitle}
+                      </span>
+                    ) : (
+                      '—'
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-gray-300">{lead.contact}</td>
                   <td className="px-6 py-4 text-gray-300">{lead.city}</td>
                   <td className="px-6 py-4 text-gray-300">{lead.birthCity || '-'}</td>
@@ -269,6 +282,12 @@ export function LeadsList() {
               )}
               <div>
                 <strong>Контакты:</strong> {selectedLead.contact}
+              </div>
+              <div>
+                <strong>Продукт:</strong>{' '}
+                {selectedLead.productTitle
+                  ? `${selectedLead.productTitle}${selectedLead.amount ? ` · ${(selectedLead.amount / 100).toLocaleString('ru-KZ')} ₸` : ''}`
+                  : '—'}
               </div>
               <div>
                 <strong>Запрос:</strong>

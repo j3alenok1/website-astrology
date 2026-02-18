@@ -50,22 +50,40 @@ export function Products() {
                   )}
                   <p className="text-sm font-semibold text-white">{product.price}</p>
                 </div>
-                <button
-                  className="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold text-sm
-                           hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
-                  onClick={() => {
-                    if (typeof window !== 'undefined') {
-                      const params = new URLSearchParams(window.location.search)
-                      params.set('product', product.slug)
-                      router.push(`/?${params.toString()}`)
-                      setTimeout(() => {
-                        document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                      }, 300)
-                    }
-                  }}
-                >
-                  Записаться и оплатить
-                </button>
+                <div className="mt-4 flex flex-col gap-2">
+                  <button
+                    className="w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold text-sm
+                             hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        const params = new URLSearchParams(window.location.search)
+                        params.set('product', product.slug)
+                        router.push(`/?${params.toString()}`)
+                        setTimeout(() => {
+                          document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        }, 300)
+                      }
+                    }}
+                  >
+                    Записаться
+                  </button>
+                  <button
+                    className="w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-white font-semibold text-sm
+                             hover:from-green-500 hover:to-emerald-500 transition-all duration-300"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        const params = new URLSearchParams(window.location.search)
+                        params.set('product', product.slug)
+                        router.push(`/?${params.toString()}`)
+                        setTimeout(() => {
+                          document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        }, 300)
+                      }
+                    }}
+                  >
+                    Записаться и оплатить
+                  </button>
+                </div>
               </motion.div>
             )
           })}

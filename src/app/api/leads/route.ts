@@ -30,6 +30,9 @@ const leadSchema = z.object({
   contact: z.string().min(5),
   request: z.string().max(1500).optional(),
   consent: z.boolean(),
+  productSlug: z.string().optional(),
+  productTitle: z.string().optional(),
+  amount: z.number().int().nonnegative().optional(),
   utmSource: z.string().nullable().optional(),
   utmMedium: z.string().nullable().optional(),
   utmCampaign: z.string().nullable().optional(),
@@ -128,6 +131,7 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
                       ${leadData.birthCity ? `<tr><td style="padding: 8px 0; color: #a78bfa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Город рождения</td></tr><tr><td style="padding: 0 0 8px; color: #fff; font-size: 16px;">${leadData.birthCity}</td></tr>` : ''}
                       <tr><td style="padding: 8px 0; color: #a78bfa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Контакты</td></tr>
                       <tr><td style="padding: 0; color: #fff; font-size: 16px; font-weight: 600;">${leadData.contact}</td></tr>
+                      ${leadData.productTitle ? `<tr><td style="padding: 8px 0; color: #a78bfa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Выбранный продукт</td></tr><tr><td style="padding: 0; color: #fff; font-size: 16px;">${leadData.productTitle}${leadData.amount ? ` · ${(leadData.amount / 100).toLocaleString('ru-KZ')} ₸` : ''}</td></tr>` : ''}
                     </table>
                   </td>
                 </tr>
@@ -262,6 +266,9 @@ export async function POST(req: NextRequest) {
       contact: body.contact,
       request: body.request,
       consent: body.consent,
+      productSlug: body.productSlug,
+      productTitle: body.productTitle,
+      amount: body.amount,
       utmSource: body.utmSource ?? body.utm_source,
       utmMedium: body.utmMedium ?? body.utm_medium,
       utmCampaign: body.utmCampaign ?? body.utm_campaign,
@@ -295,6 +302,9 @@ export async function POST(req: NextRequest) {
             contact: validatedData.contact,
             request: validatedData.request ?? '',
             consent: validatedData.consent,
+            productSlug: validatedData.productSlug,
+            productTitle: validatedData.productTitle,
+            amount: validatedData.amount,
             utmSource: validatedData.utmSource,
             utmMedium: validatedData.utmMedium,
             utmCampaign: validatedData.utmCampaign,
