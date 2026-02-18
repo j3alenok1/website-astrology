@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
     "db:generate": "prisma generate",
@@ -12,39 +12,44 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"
   },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
   "dependencies": {
-    "next": "^14.2.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "@prisma/client": "^5.19.0",
-    "zod": "^3.23.0",
-    "react-hook-form": "^7.52.0",
     "@hookform/resolvers": "^3.9.0",
+    "@prisma/client": "^5.19.0",
+    "axios": "^1.7.0",
+    "bcryptjs": "^2.4.3",
+    "clsx": "^2.1.0",
+    "date-fns": "^3.6.0",
     "framer-motion": "^11.3.0",
+    "googleapis": "^144.0.0",
+    "lucide-react": "^0.400.0",
+    "next": "^14.2.0",
     "next-auth": "^4.24.7",
     "nodemailer": "^6.9.9",
-    "googleapis": "^144.0.0",
-    "axios": "^1.7.0",
-    "date-fns": "^3.6.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "react-google-recaptcha": "^3.1.0",
-    "lucide-react": "^0.400.0",
-    "clsx": "^2.1.0",
+    "react-hook-form": "^7.52.0",
     "tailwind-merge": "^2.2.0",
-    "bcryptjs": "^2.4.3"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.14.0",
+    "@types/nodemailer": "^6.4.14",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
-    "@types/nodemailer": "^6.4.14",
     "@types/react-google-recaptcha": "^2.1.9",
-    "@types/bcryptjs": "^2.4.6",
-    "typescript": "^5.5.0",
-    "tailwindcss": "^3.4.0",
-    "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
-    "prisma": "^5.19.0"
+    "postcss": "^8.4.0",
+    "dotenv": "^16.4.0",
+    "prisma": "^5.19.0",
+    "tailwindcss": "^3.4.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.5.0"
   }
 }
