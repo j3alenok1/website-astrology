@@ -7,6 +7,14 @@ import { products } from '@/lib/products'
 export function Products() {
   const router = useRouter()
 
+  const scrollToBooking = (productSlug: string) => {
+    const params = new URLSearchParams(window.location.search)
+    params.set('product', productSlug)
+    const url = `/?${params.toString()}`
+    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    router.replace(url, { scroll: false })
+  }
+
   return (
     <section id="products" className="relative py-20 px-4 z-10">
       <div className="max-w-6xl mx-auto">
@@ -50,40 +58,13 @@ export function Products() {
                   )}
                   <p className="text-sm font-semibold text-white">{product.price}</p>
                 </div>
-                <div className="mt-4 flex flex-col gap-2">
-                  <button
-                    className="w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold text-sm
-                             hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
-                    onClick={() => {
-                      if (typeof window !== 'undefined') {
-                        const params = new URLSearchParams(window.location.search)
-                        params.set('product', product.slug)
-                        router.push(`/?${params.toString()}`)
-                        setTimeout(() => {
-                          document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                        }, 300)
-                      }
-                    }}
-                  >
-                    Записаться
-                  </button>
-                  <button
-                    className="w-full px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-white font-semibold text-sm
-                             hover:from-green-500 hover:to-emerald-500 transition-all duration-300"
-                    onClick={() => {
-                      if (typeof window !== 'undefined') {
-                        const params = new URLSearchParams(window.location.search)
-                        params.set('product', product.slug)
-                        router.push(`/?${params.toString()}`)
-                        setTimeout(() => {
-                          document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                        }, 300)
-                      }
-                    }}
-                  >
-                    Записаться и оплатить
-                  </button>
-                </div>
+                <button
+                  className="mt-4 w-full px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold text-sm
+                           hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
+                  onClick={() => scrollToBooking(product.slug)}
+                >
+                  Записаться
+                </button>
               </motion.div>
             )
           })}
