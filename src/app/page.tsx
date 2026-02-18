@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Hero } from '@/components/Hero'
 import { SpecialistSection } from '@/components/SpecialistSection'
 import { Services } from '@/components/Services'
@@ -17,9 +18,13 @@ export default function Home() {
       <Hero />
       <SpecialistSection />
       <Services />
-      <Products />
+      <Suspense fallback={null}>
+        <Products />
+      </Suspense>
       <Methodology />
-      <BookingForm />
+      <Suspense fallback={<div id="booking" className="min-h-[400px]" />}>
+        <BookingForm />
+      </Suspense>
       <FAQ />
       <Footer />
     </main>
