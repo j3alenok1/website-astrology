@@ -42,6 +42,7 @@ async function sendPaymentEmail(leadData: {
 <head><meta charset="utf-8"></head>
 <body style="font-family: sans-serif; padding: 20px;">
   <h2 style="color: #7c3aed;">💰 Оплата получена</h2>
+  <p><strong>Статус оплаты:</strong> <span style="color: #22c55e; font-weight: 700;">Оплачено</span></p>
   <p><strong>Продукт:</strong> ${leadData.productTitle}</p>
   <p><strong>Сумма:</strong> ${amountFormatted} ₸</p>
   <p><strong>Клиент:</strong> ${leadData.name}</p>

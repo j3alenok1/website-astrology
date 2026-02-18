@@ -17,6 +17,7 @@ interface Lead {
   productSlug?: string | null
   productTitle?: string | null
   amount?: number | null
+  orderId?: string | null
   utmSource?: string | null
   utmMedium?: string | null
   utmCampaign?: string | null
@@ -156,6 +157,7 @@ export function LeadsList() {
               <tr>
                 <th className="px-6 py-4 text-left text-white font-semibold">Имя</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Продукт</th>
+                <th className="px-6 py-4 text-left text-white font-semibold">Оплата</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Контакты</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Город</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Город рождения</th>
@@ -175,6 +177,17 @@ export function LeadsList() {
                       </span>
                     ) : (
                       '—'
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    {lead.orderId ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-600/30 text-green-300 text-xs font-medium">
+                        Оплачено
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded bg-amber-600/30 text-amber-300 text-xs font-medium">
+                        Не оплачено
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-gray-300">{lead.contact}</td>
@@ -288,6 +301,14 @@ export function LeadsList() {
                 {selectedLead.productTitle
                   ? `${selectedLead.productTitle}${selectedLead.amount ? ` · ${(selectedLead.amount / 100).toLocaleString('ru-KZ')} ₸` : ''}`
                   : '—'}
+              </div>
+              <div>
+                <strong>Статус оплаты:</strong>{' '}
+                {selectedLead.orderId ? (
+                  <span className="text-green-400 font-semibold">Оплачено</span>
+                ) : (
+                  <span className="text-amber-400">Не оплачено</span>
+                )}
               </div>
               <div>
                 <strong>Запрос:</strong>

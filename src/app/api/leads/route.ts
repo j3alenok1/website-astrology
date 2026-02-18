@@ -132,6 +132,8 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
                       <tr><td style="padding: 8px 0; color: #a78bfa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Контакты</td></tr>
                       <tr><td style="padding: 0; color: #fff; font-size: 16px; font-weight: 600;">${leadData.contact}</td></tr>
                       ${leadData.productTitle ? `<tr><td style="padding: 8px 0; color: #a78bfa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Выбранный продукт</td></tr><tr><td style="padding: 0; color: #fff; font-size: 16px;">${leadData.productTitle}${leadData.amount ? ` · ${(leadData.amount / 100).toLocaleString('ru-KZ')} ₸` : ''}</td></tr>` : ''}
+                      <tr><td style="padding: 8px 0; color: #a78bfa; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Статус оплаты</td></tr>
+                      <tr><td style="padding: 0; color: #fbbf24; font-size: 16px; font-weight: 600;">Не оплачено</td></tr>
                     </table>
                   </td>
                 </tr>
