@@ -1,6 +1,6 @@
 'use client'
 
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, MessageCircle, MapPin } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -17,12 +17,12 @@ export function Footer() {
                 <a href="mailto:j3alenok@gmail.com" className="hover:text-purple-400 transition-colors">j3alenok@gmail.com</a>
               </div>
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-purple-400" />
-                <span>+7 (XXX) XXX-XX-XX</span>
+                <MessageCircle className="w-5 h-5 text-purple-400" />
+                <a href="https://wa.clck.bar/77759098093" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">WhatsApp</a>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-purple-400" />
-                <span>Москва, Россия</span>
+                <span>Казахстан, Алматы</span>
               </div>
             </div>
           </div>
