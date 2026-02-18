@@ -1,86 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import {
-  UserCircle,
-  Sun,
-  Heart,
-  Users,
-  BookOpen,
-  HelpCircle,
-  Target,
-  Sparkles,
-} from 'lucide-react'
-
-const products = [
-  {
-    icon: UserCircle,
-    title: 'Астропортрет',
-    description:
-      'Устали гадать, «кто я на самом деле» и почему одни и те же сценарии повторяются? Разбор натальной карты даёт опору: ваши сильные и уязвимые стороны, конкретные шаги по финансам, отношениям, реализации или переезду — и практики, чтобы проработать сложные темы самостоятельно.',
-    format: 'Консультация 2–4 часа + PDF',
-    extra: 'В подарок — психологические практики для проработки сложных тем.',
-    price: '50 000 ₸',
-  },
-  {
-    icon: Sun,
-    title: 'Соляр',
-    description:
-      'Год впереди — а вы не знаете, когда действовать, а когда не давить на судьбу. Соляр снимает тревогу: вы видите окна возможностей, риски и точки роста на 12 месяцев. Заказывайте вблизи дня рождения — входите в новый цикл с ясностью.',
-    format: 'Разбор в PDF',
-    price: '35 000 ₸',
-  },
-  {
-    icon: Heart,
-    title: 'Детская карта',
-    description:
-      'Ребёнок «как с другой планеты», не понимаете, как его мотивировать и поддерживать? Разбор покажет тип мышления, способ общения и зоны талантов — плюс как ваши отношения с партнёром влияют на малыша. Меньше конфликтов, больше контакта.',
-    format: 'Разбор в PDF',
-    price: '25 000 ₸',
-  },
-  {
-    icon: Users,
-    title: 'Совместимость',
-    description:
-      'Отношения есть, а глубины и понимания «зачем мы вместе» не хватает — или тянет к человеку и непонятно, строить ли пару. Разбор по картам двоих: уроки союза, точки притяжения и зоны роста. Решение без долгих разговоров «в пустоту».',
-    format: 'Консультация + PDF',
-    price: '45 000 ₸',
-  },
-  {
-    icon: BookOpen,
-    title: 'Кармический урок отношений',
-    description:
-      'Один и тот же сценарий с разными людьми или не можете отпустить тяжёлые отношения. Разбор по картам: откуда повтор, как выйти из травмы и не тащить её в следующий союз. Для тех, кто хочет разомкнуть цикл, а не жить в нём.',
-    format: 'Разбор в PDF',
-    price: '25 000 ₸',
-  },
-  {
-    icon: HelpCircle,
-    title: 'Один вопрос',
-    description:
-      'Один вопрос не даёт покоя — карьера, переезд, отношения, деньги — а полный разбор карты не нужен. Фокус только на вашем запросе: формулируем его так, чтобы ответ закрыл мучающую неопределённость.',
-    format: 'Разбор в PDF или созвон',
-    price: '20 000 ₸',
-  },
-  {
-    icon: Target,
-    title: 'Профориентация',
-    description:
-      'Не знаете, в какую сторону развиваться, или чувствуете, что занимаетесь не своим? Разбор по натальной карте покажет зоны талантов, подходящие направления и способы монетизации. Ясность в карьере и призвании.',
-    format: 'Разбор в PDF или консультация',
-    price: '32 000 ₸',
-  },
-  {
-    icon: Sparkles,
-    title: 'Таро-расклад',
-    description:
-      'Нужен быстрый и чёткий ответ без долгого разбора карты. Один расклад — одна тема, 3–5 вопросов. Подходит для любой темы; при необходимости уточним формулировку, чтобы ответ попал в точку.',
-    format: 'Расклад, ответ только голосовым',
-    price: '8 000 ₸',
-  },
-]
+import { useRouter } from 'next/navigation'
+import { products } from '@/lib/products'
 
 export function Products() {
+  const router = useRouter()
+
   return (
     <section id="products" className="relative py-20 px-4 z-10">
       <div className="max-w-6xl mx-auto">
@@ -100,10 +26,10 @@ export function Products() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((product, index) => {
             const Icon = product.icon
-            const withExtra = 'extra' in product && product.extra
+            const withExtra = product.extra
             return (
               <motion.div
-                key={product.title}
+                key={product.slug}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -129,12 +55,16 @@ export function Products() {
                            hover:from-purple-500 hover:to-pink-500 transition-all duration-300"
                   onClick={() => {
                     if (typeof window !== 'undefined') {
-                      const el = document.getElementById('booking')
-                      el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      const params = new URLSearchParams(window.location.search)
+                      params.set('product', product.slug)
+                      router.push(`/?${params.toString()}`)
+                      setTimeout(() => {
+                        document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }, 300)
                     }
                   }}
                 >
-                  Записаться
+                  Записаться и оплатить
                 </button>
               </motion.div>
             )
@@ -144,4 +74,3 @@ export function Products() {
     </section>
   )
 }
-

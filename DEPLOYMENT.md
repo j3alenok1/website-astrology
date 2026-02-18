@@ -44,6 +44,7 @@ cp .env.example .env
 - `SMTP_*` - настройки email уведомлений
 - `GOOGLE_SHEETS_*` - интеграция с Google Sheets
 - `CRM_WEBHOOK_URL` - URL вебхука для CRM
+- `NEXT_PUBLIC_YANDEX_METRIKA_ID` - Яндекс.Метрика (номер счётчика)
 - `NEXT_PUBLIC_GA_ID` - Google Analytics ID
 - `NEXT_PUBLIC_META_PIXEL_ID` - Meta Pixel ID
 

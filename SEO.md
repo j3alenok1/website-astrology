@@ -18,7 +18,8 @@
 Убедитесь, что заданы:
 
 - `NEXT_PUBLIC_SITE_URL` = `https://astrobyndauzh.com`
-- `NEXT_PUBLIC_GA_ID` = ID из Google Analytics 4
+- `NEXT_PUBLIC_YANDEX_METRIKA_ID` = номер счётчика Яндекс.Метрики (обязательно для РФ/КЗ)
+- `NEXT_PUBLIC_GA_ID` = ID из Google Analytics 4 (подключить позже на основной домен)
 - `NEXT_PUBLIC_META_PIXEL_ID` = ID из Meta (Facebook) Pixel (если нужна реклама)
 
 ---
@@ -52,12 +53,16 @@
 
 ---
 
-### 5. Яндекс.Метрика (опционально)
+### 5. Яндекс.Метрика ✅ подключена
 
-Для России и Казахстана полезно добавить счётчик:
+Счётчик уже добавлен в проект. Осталось:
 
 1. Создайте счётчик на [metrika.yandex.ru](https://metrika.yandex.ru)
-2. Добавьте код счётчика в `layout.tsx` или через Google Tag Manager
+2. Скопируйте номер счётчика (число, например 12345678)
+3. Добавьте в Vercel: `NEXT_PUBLIC_YANDEX_METRIKA_ID` = `12345678`
+4. Сделайте Redeploy
+
+Статистика: [metrika.yandex.ru](https://metrika.yandex.ru) → выберите счётчик
 
 ---
 

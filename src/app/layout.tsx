@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
 import { MetaPixel } from '@/components/MetaPixel'
+import { YandexMetrika } from '@/components/YandexMetrika'
 import { StructuredData } from '@/components/StructuredData'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
@@ -107,6 +108,7 @@ export default function RootLayout({
         {children}
         <Suspense fallback={null}>
           <Analytics />
+          <YandexMetrika />
         </Suspense>
         <MetaPixel />
       </body>

@@ -6,7 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
 import { getUTMParams, formatPhoneMask, isValidPhone } from '@/lib/utils'
+import { getProductBySlug } from '@/lib/products'
 import type { LeadFormData } from '@/types'
 
 function isValidBirthDate(val: string): boolean {
@@ -47,6 +49,10 @@ const formSchema = z.object({
 })
 
 export function BookingForm() {
+  const searchParams = useSearchParams()
+  const productSlug = searchParams.get('product')
+  const selectedProduct = productSlug ? getProductBySlug(productSlug) : null
+
   const disableRecaptcha = process.env.NEXT_PUBLIC_DISABLE_RECAPTCHA === 'true'
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
   const isRecaptchaActive = !disableRecaptcha && !!siteKey
@@ -100,11 +106,8 @@ export function BookingForm() {
       reset()
       setRecaptchaValue(null)
       
-      // Track conversion
       if (typeof window !== 'undefined' && window.gtag) {
-        window.gtag('event', 'conversion', {
-          send_to: process.env.NEXT_PUBLIC_GA_ID,
-        })
+        window.gtag('event', 'conversion', { send_to: process.env.NEXT_PUBLIC_GA_ID })
       }
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'Lead')
@@ -113,6 +116,60 @@ export function BookingForm() {
       console.error('Form submission error:', error)
       setSubmitStatus('error')
     } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const onPay = async (data: LeadFormData) => {
+    if (!selectedProduct) return
+    if (isRecaptchaActive && !recaptchaValue) {
+      setSubmitStatus('error')
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+
+    const isAlmaty = /алматы|almaty|алма-ата/i.test(data.city.trim())
+
+    try {
+      const endpoint = isAlmaty ? '/api/payments/kaspi/create' : '/api/payments/create'
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productSlug: selectedProduct.slug,
+          productTitle: selectedProduct.title,
+          amount: selectedProduct.amountTiyin,
+          name: data.name,
+          birthDate: data.birthDate,
+          birthTime: data.birthTime,
+          city: data.city,
+          birthCity: data.birthCity,
+          contact: data.contact,
+          request: data.request,
+          consent: data.consent,
+          utmSource: utmParams.utm_source,
+          utmMedium: utmParams.utm_medium,
+          utmCampaign: utmParams.utm_campaign,
+          utmTerm: utmParams.utm_term,
+          utmContent: utmParams.utm_content,
+        }),
+      })
+
+      const json = await response.json()
+      if (!response.ok) throw new Error(json.error || 'Ошибка создания платежа')
+
+      if (json.paymentUrl) {
+        window.location.href = json.paymentUrl
+      } else if (json.provider === 'kaspi') {
+        window.location.href = json.successUrl || `/payment/success?orderId=${json.orderId}&provider=kaspi`
+      } else {
+        throw new Error('Не получена ссылка на оплату')
+      }
+    } catch (error) {
+      console.error('Payment error:', error)
+      setSubmitStatus('error')
       setIsSubmitting(false)
     }
   }
@@ -142,7 +199,17 @@ export function BookingForm() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="glass-effect rounded-2xl p-8"
         >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form
+            onSubmit={selectedProduct ? handleSubmit(onPay) : handleSubmit(onSubmit)}
+            className="space-y-6"
+          >
+            {selectedProduct && (
+              <div className="p-4 bg-purple-500/20 border border-purple-500/50 rounded-xl">
+                <p className="text-purple-200 text-sm font-medium">Выбранный продукт</p>
+                <p className="text-white font-semibold">{selectedProduct.title}</p>
+                <p className="text-purple-200 text-sm mt-1">{selectedProduct.price}</p>
+              </div>
+            )}
             <div>
               <label className="block text-white font-medium mb-2">Имя *</label>
               <input
@@ -299,16 +366,40 @@ export function BookingForm() {
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
-              className="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 
-                       rounded-full text-white font-semibold hover:from-purple-500 
-                       hover:to-pink-500 transition-all duration-300 cosmic-glow
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Отправка...' : 'Отправить заявку'}
-            </button>
+            {selectedProduct ? (
+              <>
+                {/алматы|almaty|алма-ата/i.test((watch('city') || '').trim()) && (
+                  <p className="text-sm text-purple-200 mb-2">
+                    💳 Оплата через Kaspi Pay — счёт придёт в приложение Kaspi.kz
+                  </p>
+                )}
+                <button
+                type="submit"
+                disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 
+                         rounded-full text-white font-semibold hover:from-green-500 
+                         hover:to-emerald-500 transition-all duration-300
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting
+                  ? /алматы|almaty|алма-ата/i.test((watch('city') || '').trim())
+                    ? 'Отправка счёта...'
+                    : 'Переход к оплате...'
+                  : `Оплатить ${selectedProduct.price}`}
+              </button>
+              </>
+            ) : (
+              <button
+                type="submit"
+                disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                className="w-full px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 
+                         rounded-full text-white font-semibold hover:from-purple-500 
+                         hover:to-pink-500 transition-all duration-300 cosmic-glow
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Отправка...' : 'Отправить заявку'}
+              </button>
+            )}
           </form>
         </motion.div>
       </div>
