@@ -1,10 +1,17 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { Suspense } from 'react'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
 import { MetaPixel } from '@/components/MetaPixel'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+}
 
 export const metadata: Metadata = {
   title: 'ASTRO by NDAUZH',
@@ -29,11 +36,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
 }
 
 export default function RootLayout({
@@ -49,7 +51,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         {children}
-        <Analytics />
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
         <MetaPixel />
       </body>
     </html>
