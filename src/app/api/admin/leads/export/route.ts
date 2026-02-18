@@ -2,9 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { formatDate } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
+
+function toISODate(date: Date | string): string {
+  const d = new Date(date)
+  return d.toISOString().split('T')[0]
+}
+
+const statusLabels: Record<string, string> = {
+  new: 'Новая',
+  contacted: 'Связались',
+  completed: 'Завершена',
+  archived: 'Архив',
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,7 +35,6 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    // Generate CSV
     const headers = [
       'ID',
       'Имя',
@@ -44,25 +54,28 @@ export async function GET(req: NextRequest) {
     const rows = leads.map((lead) => [
       lead.id,
       lead.name,
-      formatDate(lead.birthDate),
+      toISODate(lead.birthDate),
       lead.birthTime || '',
       lead.city,
       lead.birthCity || '',
       lead.contact,
-      lead.request.replace(/"/g, '""'),
-      lead.status,
+      (lead.request || '').replace(/"/g, '""'),
+      statusLabels[lead.status] || lead.status,
       lead.utmSource || '',
       lead.utmMedium || '',
       lead.utmCampaign || '',
-      formatDate(lead.createdAt),
+      toISODate(lead.createdAt),
     ])
 
     const csv = [
       headers.join(','),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
-    ].join('\n')
+      ...rows.map((row) => row.map((cell) => `"${String(cell)}"`).join(',')),
+    ].join('\r\n')
 
-    return new NextResponse(csv, {
+    const BOM = '\uFEFF'
+    const body = BOM + csv
+
+    return new NextResponse(body, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="leads-${new Date().toISOString().split('T')[0]}.csv"`,

@@ -116,7 +116,7 @@ export function LeadsList() {
               setSelectedStatus(e.target.value)
               setPage(1)
             }}
-            className="px-4 py-2 glass-effect rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2 bg-purple-600/80 rounded-lg text-white border border-purple-400/30 focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
             <option value="all">Все статусы</option>
             <option value="new">Новые</option>
@@ -126,8 +126,8 @@ export function LeadsList() {
           </select>
           <button
             onClick={exportCSV}
-            className="px-4 py-2 glass-effect rounded-lg text-white hover:bg-white/20 
-                     transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-purple-600/80 rounded-lg text-white hover:bg-purple-500 
+                     transition-colors flex items-center gap-2 border border-purple-400/30"
           >
             <Download className="w-5 h-5" />
             Экспорт CSV
@@ -160,9 +160,16 @@ export function LeadsList() {
                   <td className="px-6 py-4 text-gray-300">{lead.city}</td>
                   <td className="px-6 py-4 text-gray-300">{lead.birthCity || '-'}</td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg ${
+                      lead.status === 'completed' ? 'bg-green-600/30 text-green-300 border border-green-500/50' :
+                      lead.status === 'archived' ? 'bg-gray-600/30 text-gray-300 border border-gray-500/50' :
+                      lead.status === 'contacted' ? 'bg-blue-600/30 text-blue-300 border border-blue-500/50' :
+                      'bg-amber-600/30 text-amber-300 border border-amber-500/50'
+                    }`}>
                       {getStatusIcon(lead.status)}
-                      <span className="text-gray-300 capitalize">{lead.status}</span>
+                      <span className="capitalize font-medium">
+                        {lead.status === 'contacted' ? 'Связались' : lead.status === 'completed' ? 'Завершена' : lead.status === 'archived' ? 'Архив' : 'Новая'}
+                      </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-gray-300">
@@ -172,7 +179,7 @@ export function LeadsList() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setSelectedLead(lead)}
-                        className="p-2 glass-effect rounded-lg hover:bg-white/20 transition-colors"
+                        className="p-2 bg-purple-600/80 rounded-lg hover:bg-purple-500 transition-colors border border-purple-400/30"
                         title="Просмотр"
                       >
                         <Eye className="w-4 h-4 text-white" />
@@ -180,7 +187,7 @@ export function LeadsList() {
                       {lead.status === 'new' && (
                         <button
                           onClick={() => updateLeadStatus(lead.id, 'contacted')}
-                          className="px-3 py-1 bg-blue-600 rounded-lg text-white text-sm hover:bg-blue-500 transition-colors"
+                          className="px-3 py-1.5 bg-blue-600 rounded-lg text-white text-sm hover:bg-blue-500 transition-colors font-medium"
                         >
                           Связались
                         </button>
@@ -188,7 +195,7 @@ export function LeadsList() {
                       {lead.status === 'contacted' && (
                         <button
                           onClick={() => updateLeadStatus(lead.id, 'completed')}
-                          className="px-3 py-1 bg-green-600 rounded-lg text-white text-sm hover:bg-green-500 transition-colors"
+                          className="px-3 py-1.5 bg-green-600 rounded-lg text-white text-sm hover:bg-green-500 transition-colors font-medium"
                         >
                           Завершить
                         </button>
@@ -207,7 +214,7 @@ export function LeadsList() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-4 py-2 glass-effect rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-purple-600/80 rounded-lg text-white border border-purple-400/30 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-500"
           >
             Назад
           </button>
@@ -217,7 +224,7 @@ export function LeadsList() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-4 py-2 glass-effect rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-purple-600/80 rounded-lg text-white border border-purple-400/30 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-500"
           >
             Вперед
           </button>
