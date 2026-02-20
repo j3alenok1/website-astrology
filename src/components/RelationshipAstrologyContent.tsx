@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Heart, Calendar, MapPin } from 'lucide-react'
+import { Heart, Calendar } from 'lucide-react'
 
 export function RelationshipAstrologyContent() {
   return (
@@ -107,16 +107,16 @@ export function RelationshipAstrologyContent() {
           className="glass-effect rounded-2xl p-8 border-2 border-purple-500/30"
         >
           <div className="flex items-center gap-3 mb-4">
-            <MapPin className="w-8 h-8 text-green-400" />
-            <h3 className="text-xl font-bold gradient-text">Живой МК в г. Алматы</h3>
+            <Calendar className="w-8 h-8 text-green-400" />
+            <h3 className="text-xl font-bold gradient-text">Календарь-методичка «Астрология Отношений»</h3>
           </div>
           <p className="text-gray-300 mb-6">
-            Это живая встреча, на которой ты научишься считывать свои «правильные настройки» для гармоничных отношений через натальную карту, а также сможешь задать любые вопросы практикующему астрологу.
+            Готовый файл с благоприятными датами на год — как методичка, которую получаешь сразу после оплаты. В календаре указаны удачные дни для важных дел в сфере отношений.
           </p>
           <div className="flex items-center gap-2 p-4 bg-green-500/20 rounded-xl border border-green-500/30">
             <Calendar className="w-6 h-6 text-green-400 shrink-0" />
             <p className="text-green-200 font-medium">
-              В подарок при оплате — астрологический календарь на год
+              При оплате 4 990 ₸ — методичка-календарь с благоприятными датами на год. Скачивание сразу после оплаты.
             </p>
           </div>
         </motion.div>
