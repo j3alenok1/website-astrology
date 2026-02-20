@@ -8,6 +8,7 @@ import {
   HelpCircle,
   Target,
   Sparkles,
+  CalendarHeart,
 } from 'lucide-react'
 
 export interface Product {
@@ -92,6 +93,16 @@ export const products: Product[] = [
     format: 'Разбор в PDF или консультация',
     price: '32 000 ₸',
     amountTiyin: 3_200_000,
+  },
+  {
+    slug: 'astrologiya-otnosheniy',
+    icon: CalendarHeart,
+    title: 'Астрология Отношений',
+    description:
+      'Живая встреча в Алматы: научись считывать натальную карту для гармоничных отношений. Для тех, кто в отношениях — как углубить и улучшить. Для тех, кто без — как найти «своего» человека. В подарок — календарь на год.',
+    format: 'Живой мастер-класс в Алматы + календарь на год',
+    price: '35 000 ₸',
+    amountTiyin: 3_500_000,
   },
   {
     slug: 'taro-rasklad',

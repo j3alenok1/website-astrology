@@ -48,9 +48,13 @@ const formSchema = z.object({
   consent: z.boolean().refine((val) => val === true, 'Необходимо согласие на обработку данных'),
 })
 
-export function BookingForm() {
+interface BookingFormProps {
+  productSlugOverride?: string
+}
+
+export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
   const searchParams = useSearchParams()
-  const productSlug = searchParams.get('product')
+  const productSlug = productSlugOverride ?? searchParams.get('product')
   const selectedProduct = productSlug ? getProductBySlug(productSlug) : null
 
   const disableRecaptcha = process.env.NEXT_PUBLIC_DISABLE_RECAPTCHA === 'true'

@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Hero } from '@/components/Hero'
 import { SpecialistSection } from '@/components/SpecialistSection'
 import { Services } from '@/components/Services'
+import { WorkshopBanner } from '@/components/WorkshopBanner'
 import { Products } from '@/components/Products'
 import { Methodology } from '@/components/Methodology'
 import { BookingForm } from '@/components/BookingForm'
@@ -18,6 +19,7 @@ export default function Home() {
       <Hero />
       <SpecialistSection />
       <Services />
+      <WorkshopBanner />
       <Suspense fallback={null}>
         <Products />
       </Suspense>

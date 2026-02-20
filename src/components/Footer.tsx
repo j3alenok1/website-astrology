@@ -30,6 +30,7 @@ export function Footer() {
               <li><a href="#services" className="hover:text-purple-400 transition-colors">Таро</a></li>
               <li><a href="#services" className="hover:text-purple-400 transition-colors">Психология</a></li>
               <li><a href="#booking" className="hover:text-purple-400 transition-colors">Записаться</a></li>
+              <li><a href="/relationshipastrology" className="hover:text-purple-400 transition-colors">Астрология Отношений</a></li>
             </ul>
           </div>
 
