@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { motion } from 'framer-motion'
-import { getUTMParams, formatPhoneMask, isValidPhone } from '@/lib/utils'
+import { getUTMParams, formatPhoneMask, isValidPhone, reachMetrikaGoal } from '@/lib/utils'
 import { getProductBySlug } from '@/lib/products'
 
 const minimalSchema = z.object({
@@ -54,6 +54,10 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
 
     setIsSubmitting(true)
     setSubmitStatus('idle')
+
+    if (productSlug === 'astrologiya-otnosheniy') {
+      reachMetrikaGoal('metodichka_pay_click')
+    }
 
     const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
     const returnUrl = `${baseUrl}/payment/success?product=${productSlug}`

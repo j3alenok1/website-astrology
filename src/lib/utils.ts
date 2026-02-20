@@ -51,3 +51,16 @@ export function getUTMParams(): Record<string, string | null> {
     utm_content: params.get('utm_content'),
   }
 }
+
+/** Цель Яндекс.Метрики (для методички 7777 ₸ — отдельная настройка рекламы) */
+export function reachMetrikaGoal(goalName: string, params?: Record<string, string | number>) {
+  if (typeof window === 'undefined') return
+  const w = window as { ym?: (id: number, a: string, ...args: unknown[]) => void }
+  if (!w.ym) return
+  const id = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
+  if (!id) return
+  const numId = parseInt(id, 10)
+  if (isNaN(numId)) return
+  if (params) w.ym(numId, 'reachGoal', goalName, params)
+  else w.ym(numId, 'reachGoal', goalName)
+}

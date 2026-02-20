@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 import { CheckCircle, Smartphone, Download } from 'lucide-react'
+import { reachMetrikaGoal } from '@/lib/utils'
 
 const DIGITAL_PRODUCT = 'astrologiya-otnosheniy'
 
@@ -20,6 +21,13 @@ export default function PaymentSuccessPage() {
     setProvider(params.get('provider'))
     setProduct(params.get('product'))
   }, [])
+
+  // Цель Метрики для методички — конверсия (покупка 7777 ₸), для отдельной настройки рекламы
+  useEffect(() => {
+    if (product === DIGITAL_PRODUCT && orderId) {
+      reachMetrikaGoal('metodichka_purchase', { order_price: 7777, currency: 'KZT' })
+    }
+  }, [product, orderId])
 
   useEffect(() => {
     if (product !== DIGITAL_PRODUCT || !orderId) return

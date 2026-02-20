@@ -116,7 +116,7 @@ export function RelationshipAstrologyContent() {
           <div className="flex items-center gap-2 p-4 bg-green-500/20 rounded-xl border border-green-500/30">
             <Calendar className="w-6 h-6 text-green-400 shrink-0" />
             <p className="text-green-200 font-medium">
-              4 990 ₸ — полная методичка с ответами на все вопросы выше + календарь удачных дат на год. Скачивание сразу после оплаты.
+              7 777 ₸ — полная методичка с ответами на все вопросы выше + календарь удачных дат на год. Скачивание сразу после оплаты.
             </p>
           </div>
         </motion.div>
