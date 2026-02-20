@@ -7,7 +7,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Vercel Postgres: используйте DATABASE_PRISMA_DATABASE_URL если DATABASE_URL не доступна при build
+  url      = env("DATABASE_PRISMA_DATABASE_URL")
 }
 
 model Lead {

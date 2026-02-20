@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { NebulaBg } from '@/components/NebulaBg'
 import { PhotoBackground } from '@/components/PhotoBackground'
 import { RelationshipAstrologyContent } from '@/components/RelationshipAstrologyContent'
-import { BookingForm } from '@/components/BookingForm'
+import { PaymentFormMinimal } from '@/components/PaymentFormMinimal'
 import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -31,8 +31,8 @@ export default function RelationshipAstrologyPage() {
 
       <RelationshipAstrologyContent />
 
-      <Suspense fallback={<div id="booking" className="min-h-[400px]" />}>
-        <BookingForm productSlugOverride="astrologiya-otnosheniy" />
+      <Suspense fallback={<div id="payment" className="min-h-[400px]" />}>
+        <PaymentFormMinimal productSlug="astrologiya-otnosheniy" />
       </Suspense>
 
       <Footer />
