@@ -59,10 +59,10 @@ function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className={`glass-effect rounded-2xl p-8 cursor-pointer flex flex-col transition-all duration-300
-        ${isOpen ? 'bg-white/15' : 'hover:bg-white/10'}
+      className={`glass-effect rounded-2xl p-8 pr-16 cursor-pointer flex flex-col transition-all duration-300 relative
+        ${isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10'}
         hover:scale-[1.02] group`}
-      onClick={(e) => { e.stopPropagation(); onToggle() }}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle() }}
     >
       <div className="flex items-start gap-4">
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -75,8 +75,8 @@ function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
           <h3 className="text-2xl font-bold text-white">{service.title}</h3>
         </div>
         <div
-          className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center 
-                   ml-6 transition-colors duration-300
+          className={`absolute right-6 top-8 w-11 h-11 rounded-full flex items-center justify-center 
+                   transition-colors duration-300
                    ${isOpen ? 'bg-white/10 text-purple-400' : 'bg-white/5 text-gray-400 group-hover:text-purple-400 group-hover:bg-white/10'}`}
         >
           <motion.div
