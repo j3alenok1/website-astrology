@@ -6,6 +6,7 @@ import { Sparkles, Brain, Star, ChevronDown } from 'lucide-react'
 
 const services = [
   {
+    id: 'astrologiya',
     icon: Sparkles,
     title: 'Астрология',
     description:
@@ -13,6 +14,7 @@ const services = [
     color: 'from-purple-500 to-purple-700',
   },
   {
+    id: 'taro',
     icon: Star,
     title: 'Таро',
     description:
@@ -20,6 +22,7 @@ const services = [
     color: 'from-pink-500 to-pink-700',
   },
   {
+    id: 'psihologiya',
     icon: Brain,
     title: 'Психология',
     description:
@@ -27,6 +30,7 @@ const services = [
     color: 'from-blue-500 to-blue-700',
   },
   {
+    id: 'kompleksnyy-podhod',
     icon: Sparkles,
     title: 'Комплексный подход',
     description:
@@ -35,13 +39,16 @@ const services = [
   },
 ]
 
+const TRANSITION = { duration: 0.35, ease: [0.32, 0.72, 0, 1] }
+
 interface ServiceCardProps {
   service: (typeof services)[0]
   index: number
+  isOpen: boolean
+  onToggle: () => void
 }
 
-function ServiceCard({ service, index }: ServiceCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
+function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
   const Icon = service.icon
 
   if (!Icon) return null
@@ -52,9 +59,10 @@ function ServiceCard({ service, index }: ServiceCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className="glass-effect rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 
-               transform hover:scale-[1.02] group cursor-pointer flex flex-col"
-      onClick={() => setIsExpanded((v) => !v)}
+      className={`glass-effect rounded-2xl p-8 cursor-pointer flex flex-col transition-all duration-300
+        ${isOpen ? 'bg-white/15' : 'hover:bg-white/10'}
+        hover:scale-[1.02] group`}
+      onClick={(e) => { e.stopPropagation(); onToggle() }}
     >
       <div className="flex items-start justify-between gap-6">
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -67,26 +75,26 @@ function ServiceCard({ service, index }: ServiceCardProps) {
           <h3 className="text-2xl font-bold text-white">{service.title}</h3>
         </div>
         <div
-          className="shrink-0 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center 
-                   text-gray-400 group-hover:text-purple-400 group-hover:bg-white/10 
-                   transition-colors duration-300"
+          className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center 
+                   transition-colors duration-300
+                   ${isOpen ? 'bg-white/10 text-purple-400' : 'bg-white/5 text-gray-400 group-hover:text-purple-400 group-hover:bg-white/10'}`}
         >
           <motion.div
-            animate={{ rotate: isExpanded ? 180 : 0 }}
-            transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+            animate={{ rotate: isOpen ? 180 : 0 }}
+            transition={TRANSITION}
           >
             <ChevronDown className="w-5 h-5" />
           </motion.div>
         </div>
       </div>
       <AnimatePresence initial={false}>
-        {isExpanded && (
+        {isOpen && (
           <motion.div
             key="content"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+            transition={TRANSITION}
             className="overflow-hidden"
           >
             <p className="text-gray-300 leading-relaxed pt-4 border-t border-white/10">
@@ -100,6 +108,12 @@ function ServiceCard({ service, index }: ServiceCardProps) {
 }
 
 export function Services() {
+  const [openId, setOpenId] = useState<string | null>(null)
+
+  const toggle = (id: string) => {
+    setOpenId((prev) => (prev === id ? null : id))
+  }
+
   return (
     <section id="methodology" className="relative py-20 px-4 z-10">
       <div className="max-w-7xl mx-auto">
@@ -120,7 +134,13 @@ export function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <ServiceCard key={service.title} service={service} index={index} />
+            <ServiceCard
+              key={service.id}
+              service={service}
+              index={index}
+              isOpen={openId === service.id}
+              onToggle={() => toggle(service.id)}
+            />
           ))}
         </div>
       </div>
