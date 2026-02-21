@@ -36,10 +36,10 @@ const services = [
 ]
 
 export function Services() {
-  const [expanded, setExpanded] = useState<Record<number, boolean>>({})
+  const [expanded, setExpanded] = useState<boolean[]>(() => Array(services.length).fill(false))
 
   const toggle = (index: number) => {
-    setExpanded((prev) => ({ ...prev, [index]: !prev[index] }))
+    setExpanded((prev) => prev.map((v, i) => (i === index ? !v : v)))
   }
 
   return (
@@ -75,7 +75,7 @@ export function Services() {
                 transition={{ delay: index * 0.1, duration: 0.6 }}
                 className="glass-effect rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 
                          transform hover:scale-[1.02] group cursor-pointer flex flex-col"
-                onClick={() => toggle(index)}
+                onClick={(e) => { e.stopPropagation(); toggle(index) }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -100,7 +100,7 @@ export function Services() {
                 <AnimatePresence initial={false}>
                   {isExpanded && (
                     <motion.div
-                      key="content"
+                      key={`${service.title}-content`}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
