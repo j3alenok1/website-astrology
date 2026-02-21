@@ -44,14 +44,19 @@ const TRANSITION = { duration: 0.35, ease: [0.32, 0.72, 0, 1] }
 interface ServiceCardProps {
   service: (typeof services)[0]
   index: number
-  isOpen: boolean
-  onToggle: () => void
 }
 
-function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
+function ServiceCard({ service, index }: ServiceCardProps) {
+  const [isOpen, setIsOpen] = useState(false)
   const Icon = service.icon
 
   if (!Icon) return null
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsOpen((prev) => !prev)
+  }
 
   return (
     <motion.div
@@ -62,7 +67,7 @@ function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
       className={`glass-effect rounded-2xl p-8 pr-16 cursor-pointer flex flex-col transition-all duration-300 relative
         ${isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10'}
         hover:scale-[1.02] group`}
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle() }}
+      onClick={handleToggle}
     >
       <div className="flex items-start gap-4">
         <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -90,7 +95,7 @@ function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
-            key="content"
+            key={`${service.id}-content`}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -108,12 +113,6 @@ function ServiceCard({ service, index, isOpen, onToggle }: ServiceCardProps) {
 }
 
 export function Services() {
-  const [openId, setOpenId] = useState<string | null>(null)
-
-  const toggle = (id: string) => {
-    setOpenId((prev) => (prev === id ? null : id))
-  }
-
   return (
     <section id="methodology" className="relative py-20 px-4 z-10">
       <div className="max-w-7xl mx-auto">
@@ -134,13 +133,7 @@ export function Services() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service, index) => (
-            <ServiceCard
-              key={service.id}
-              service={service}
-              index={index}
-              isOpen={openId === service.id}
-              onToggle={() => toggle(service.id)}
-            />
+            <ServiceCard key={service.id} service={service} index={index} />
           ))}
         </div>
       </div>
