@@ -74,14 +74,14 @@ export function Services() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
                 className="glass-effect rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 
-                         transform hover:scale-[1.02] group cursor-pointer"
+                         transform hover:scale-[1.02] group cursor-pointer flex flex-col"
                 onClick={() => toggle(index)}
               >
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-3 min-w-0">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div
                       className={`w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
-                               flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}
+                               flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}
                     >
                       <Icon className="w-8 h-8 text-white" />
                     </div>
@@ -89,10 +89,12 @@ export function Services() {
                   </div>
                   <motion.div
                     animate={{ rotate: isExpanded ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="shrink-0 text-gray-400 group-hover:text-purple-400 transition-colors"
+                    transition={{ duration: 0.4, ease: [0.32, 0.72, 0, 1] }}
+                    className="shrink-0 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center 
+                             ml-4 text-gray-400 group-hover:text-purple-400 group-hover:bg-white/10 
+                             transition-colors duration-300"
                   >
-                    <ChevronDown className="w-6 h-6" />
+                    <ChevronDown className="w-5 h-5" />
                   </motion.div>
                 </div>
                 <AnimatePresence initial={false}>
@@ -102,10 +104,10 @@ export function Services() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                      transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="text-gray-300 leading-relaxed pt-2 border-t border-white/10">
+                      <p className="text-gray-300 leading-relaxed pt-4 border-t border-white/10">
                         {service.description}
                       </p>
                     </motion.div>
