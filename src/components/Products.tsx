@@ -32,7 +32,9 @@ export function Products() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map((product, index) => {
+          {products
+            .filter((p) => p.slug !== 'astrologiya-otnosheniy')
+            .map((product, index) => {
             const Icon = product.icon
             const withExtra = product.extra
             return (
