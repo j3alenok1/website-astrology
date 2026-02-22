@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useId, memo } from 'react'
+import { useState, useId, memo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Brain, Star } from 'lucide-react'
 import { CosmicDustCanvas } from './CosmicDustCanvas'
@@ -16,6 +16,9 @@ const services = [
     color: 'from-purple-500 to-pink-600',
     glow: '0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(236, 72, 153, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.05)',
     buttonGlow: '0 0 15px rgba(139, 92, 246, 0.6), 0 0 30px rgba(236, 72, 153, 0.3)',
+    buttonBg: 'linear-gradient(135deg, rgba(139, 92, 246, 0.35), rgba(236, 72, 153, 0.3))',
+    buttonBorder: 'rgba(139, 92, 246, 0.6)',
+    iconGlow: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.25), transparent 70%)',
   },
   {
     id: 'taro',
@@ -27,6 +30,9 @@ const services = [
     color: 'from-pink-500 to-orange-500',
     glow: '0 0 25px rgba(236, 72, 153, 0.5), 0 0 50px rgba(249, 115, 22, 0.25), inset 0 0 20px rgba(236, 72, 153, 0.05)',
     buttonGlow: '0 0 15px rgba(236, 72, 153, 0.6), 0 0 30px rgba(249, 115, 22, 0.3)',
+    buttonBg: 'linear-gradient(135deg, rgba(236, 72, 153, 0.35), rgba(249, 115, 22, 0.3))',
+    buttonBorder: 'rgba(236, 72, 153, 0.6)',
+    iconGlow: 'radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.25), transparent 70%)',
   },
   {
     id: 'psihologiya',
@@ -38,6 +44,9 @@ const services = [
     color: 'from-blue-500 to-cyan-500',
     glow: '0 0 25px rgba(59, 130, 246, 0.5), 0 0 50px rgba(34, 211, 238, 0.25), inset 0 0 20px rgba(59, 130, 246, 0.05)',
     buttonGlow: '0 0 15px rgba(59, 130, 246, 0.6), 0 0 30px rgba(34, 211, 238, 0.3)',
+    buttonBg: 'linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(34, 211, 238, 0.3))',
+    buttonBorder: 'rgba(59, 130, 246, 0.6)',
+    iconGlow: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.25), transparent 70%)',
   },
   {
     id: 'kompleksnyy-podhod',
@@ -49,6 +58,9 @@ const services = [
     color: 'from-purple-500 to-violet-600',
     glow: '0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(124, 58, 237, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.05)',
     buttonGlow: '0 0 15px rgba(139, 92, 246, 0.6), 0 0 30px rgba(124, 58, 237, 0.3)',
+    buttonBg: 'linear-gradient(135deg, rgba(139, 92, 246, 0.35), rgba(124, 58, 237, 0.3))',
+    buttonBorder: 'rgba(139, 92, 246, 0.6)',
+    iconGlow: 'radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.25), transparent 70%)',
   },
 ]
 
@@ -92,9 +104,13 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
         <div
           className={`icon-with-starburst w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
                    flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-300 relative overflow-visible`}
-          style={{ boxShadow: service.buttonGlow }}
+          style={{
+            boxShadow: service.buttonGlow,
+            ['--icon-glow' as string]: service.iconGlow,
+          }}
           data-starburst={service.dustColor}
         >
+          <div className="icon-glow-layer" aria-hidden />
           <Icon className="w-8 h-8 text-white relative z-10" />
           <div className="starburst-flash" aria-hidden />
         </div>
@@ -120,9 +136,13 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
 
       <button
         onClick={handleToggle}
-        className={`mt-auto w-full py-3 px-4 rounded-xl font-semibold text-white text-sm
-          bg-gradient-to-r ${service.color} hover:opacity-90 transition-all duration-300`}
-        style={{ boxShadow: service.buttonGlow }}
+        className="mt-auto w-full py-3 px-4 rounded-full font-semibold text-white text-sm
+          backdrop-blur-sm border hover:opacity-90 transition-all duration-300"
+        style={{
+          background: service.buttonBg,
+          borderColor: service.buttonBorder,
+          boxShadow: service.buttonGlow,
+        }}
       >
         {isOpen ? 'Свернуть' : 'Подробнее'}
       </button>
@@ -132,12 +152,31 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
 })
 
 export function Services() {
+  const sectionRef = useRef<HTMLDivElement>(null)
+
   return (
     <section id="methodology" className="relative py-20 px-4 z-10">
-      <div className="relative min-h-[500px]">
-        {/* Canvas в контейнере с фиксированной высотой — не ресайзится при раскрытии карточек */}
-        <div className="absolute inset-x-0 top-0 h-[1100px] z-0">
-          <CosmicDustCanvas />
+      <div ref={sectionRef} className="relative min-h-[500px] overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            maskImage: `linear-gradient(to bottom, transparent 0%, black 12%, black 75%, transparent 100%)`,
+            WebkitMaskImage: `linear-gradient(to bottom, transparent 0%, black 12%, black 75%, transparent 100%)`,
+            maskSize: '100% 100%',
+            maskRepeat: 'no-repeat',
+          }}
+        >
+          <CosmicDustCanvas containerRef={sectionRef} />
+          <div
+            className="absolute inset-0 z-[1]"
+            style={{
+              background: `
+                radial-gradient(circle at 30% 50%, rgba(140, 0, 255, 0.15), transparent 60%),
+                radial-gradient(circle at 70% 40%, rgba(0, 120, 255, 0.15), transparent 60%)
+              `,
+            }}
+            aria-hidden
+          />
         </div>
         <div className="max-w-7xl mx-auto relative z-10">
         <motion.div

@@ -1,122 +1,142 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 
-interface Particle {
+interface Star {
   x: number
   y: number
-  radius: number
-  speedY: number
-  opacity: number
-  color: string
+  size: number
+  alpha: number
+  twinkleSpeed: number
 }
 
-export function CosmicDustCanvas({ className = '' }: { className?: string }) {
+interface CosmicDustCanvasProps {
+  containerRef?: RefObject<HTMLDivElement | null>
+}
+
+export function CosmicDustCanvas({ containerRef }: CosmicDustCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const particlesRef = useRef<Particle[]>([])
+  const starsRef = useRef<Star[]>([])
   const animationRef = useRef<number>(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const container = containerRef.current
-    if (!canvas || !container) return
+    const container = containerRef?.current
+    if (!canvas) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const colors = [
-      'rgba(255,255,255,',
-      'rgba(200,180,255,',
-      'rgba(180,150,255,',
-      'rgba(236,72,153,',
-      'rgba(139,92,246,',
-    ]
-
-    const initParticles = (width: number, height: number) => {
-      const particles: Particle[] = []
+    const initStars = (width: number, height: number) => {
+      const stars: Star[] = []
       for (let i = 0; i < 120; i++) {
-        const colorIdx = Math.floor(Math.random() * colors.length)
-        particles.push({
+        stars.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          radius: Math.random() * 2 + 0.5,
-          speedY: Math.random() * 0.5 + 0.2,
-          opacity: Math.random() * 0.6 + 0.3,
-          color: colors[colorIdx],
+          size: Math.random() * 2 + 0.5,
+          alpha: Math.random(),
+          twinkleSpeed: Math.random() * 0.02 + 0.005,
         })
       }
-      return particles
+      return stars
     }
 
-    const resize = (reinitParticles = false) => {
-      const rect = container.getBoundingClientRect()
-      if (rect.width <= 0 || rect.height <= 0) return
+    const drawStar = (x: number, y: number, size: number, alpha: number) => {
+      ctx.save()
+      ctx.translate(x, y)
+      ctx.globalAlpha = alpha
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.moveTo(-size, 0)
+      ctx.lineTo(size, 0)
+      ctx.moveTo(0, -size)
+      ctx.lineTo(0, size)
+      ctx.stroke()
+      ctx.restore()
+    }
+
+    const getDimensions = () => {
+      if (container) {
+        const rect = container.getBoundingClientRect()
+        return { w: rect.width, h: rect.height }
+      }
+      return { w: window.innerWidth, h: window.innerHeight }
+    }
+
+    const resize = () => {
+      const { w, h } = getDimensions()
+      if (w <= 0 || h <= 0) return
       const dpr = window.devicePixelRatio || 1
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      canvas.style.width = `${rect.width}px`
-      canvas.style.height = `${rect.height}px`
+      canvas.width = w * dpr
+      canvas.height = h * dpr
+      canvas.style.width = `${w}px`
+      canvas.style.height = `${h}px`
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      if (reinitParticles || particlesRef.current.length === 0) {
-        particlesRef.current = initParticles(rect.width, rect.height)
-      } else {
-        particlesRef.current.forEach((p) => {
-          if (p.x > rect.width) p.x = Math.random() * rect.width
-          if (p.y > rect.height) p.y = Math.random() * rect.height
-        })
-      }
+      starsRef.current = initStars(w, h)
     }
-
-    let width = 0
-    let height = 0
 
     const animate = () => {
-      const rect = container.getBoundingClientRect()
-      width = rect.width
-      height = rect.height
-      if (width <= 0 || height <= 0) {
+      const { w, h } = getDimensions()
+      if (w <= 0 || h <= 0) {
         animationRef.current = requestAnimationFrame(animate)
         return
       }
-      ctx.clearRect(0, 0, width, height)
+      ctx.clearRect(0, 0, w, h)
 
-      particlesRef.current.forEach((p) => {
-        p.y -= p.speedY
-        if (p.y < 0) {
-          p.y = height
-          p.x = Math.random() * width
+      starsRef.current.forEach((star) => {
+        star.alpha += star.twinkleSpeed
+        if (star.alpha > 1 || star.alpha < 0.1) {
+          star.twinkleSpeed *= -1
         }
-
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-        ctx.fillStyle = `${p.color}${p.opacity})`
-        ctx.fill()
+        drawStar(star.x, star.y, star.size, star.alpha)
       })
 
       animationRef.current = requestAnimationFrame(animate)
     }
 
-    resize(true)
+    resize()
     animate()
 
-    const resizeObserver = new ResizeObserver(() => resize(false))
-    resizeObserver.observe(container)
+    const handleResize = () => {
+      const { w, h } = getDimensions()
+      if (w <= 0 || h <= 0) return
+      const dpr = window.devicePixelRatio || 1
+      canvas.width = w * dpr
+      canvas.height = h * dpr
+      canvas.style.width = `${w}px`
+      canvas.style.height = `${h}px`
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      if (starsRef.current.length === 0) {
+        starsRef.current = initStars(w, h)
+      } else {
+        starsRef.current.forEach((star) => {
+          if (star.x > w) star.x = Math.random() * w
+          if (star.y > h) star.y = Math.random() * h
+        })
+      }
+    }
+
+    const resizeObserver = container ? new ResizeObserver(handleResize) : null
+    if (container) resizeObserver?.observe(container)
+    window.addEventListener('resize', handleResize)
 
     return () => {
-      resizeObserver.disconnect()
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', handleResize)
       cancelAnimationFrame(animationRef.current)
     }
-  }, [])
+  }, [containerRef])
+
+  const isScoped = !!containerRef
 
   return (
-    <div ref={containerRef} className={`absolute inset-0 overflow-hidden ${className}`}>
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ pointerEvents: 'none' }}
-        aria-hidden
-      />
-    </div>
+    <canvas
+      ref={canvasRef}
+      id={isScoped ? undefined : 'dust'}
+      className={isScoped ? 'absolute inset-0 w-full h-full pointer-events-none' : 'fixed inset-0 w-full h-full z-0'}
+      style={{ pointerEvents: 'none' }}
+      aria-hidden
+    />
   )
 }

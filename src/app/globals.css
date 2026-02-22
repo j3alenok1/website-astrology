@@ -15,6 +15,7 @@
     background: linear-gradient(160deg, rgba(15, 23, 42, 0.97) 0%, rgba(30, 27, 75, 0.95) 50%, rgba(15, 23, 42, 0.97) 100%);
     background-attachment: fixed;
   }
+
 }
 
 @layer utilities {
@@ -48,6 +49,17 @@
 
   .neon-card:hover {
     box-shadow: var(--neon-glow) !important;
+  }
+
+  /* Canvas космической пыли — fixed, fullscreen, поверх тумана */
+  #dust {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
   }
 
   /* Космическая пыль — своя у каждой карточки, позади контента, органичное мерцание */
@@ -205,6 +217,16 @@
   /* Вспышка-стаберст как на картинке: белое ядро + 4 луча маджента-фиолет + мягкий ореол */
   .icon-with-starburst {
     position: relative;
+  }
+
+  /* Свой радиальный градиент у каждой иконки методологии */
+  .icon-glow-layer {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    background: var(--icon-glow);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .starburst-flash {

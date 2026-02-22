@@ -9,7 +9,6 @@ import { FAQ } from '@/components/FAQ'
 import { Footer } from '@/components/Footer'
 import { NebulaBg } from '@/components/NebulaBg'
 import { PhotoBackground } from '@/components/PhotoBackground'
-
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden space-y-8">
