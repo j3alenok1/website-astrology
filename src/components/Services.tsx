@@ -3,10 +3,12 @@
 import { useState, useId, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Brain, Star } from 'lucide-react'
+import { CosmicDustCanvas } from './CosmicDustCanvas'
 
 const services = [
   {
     id: 'astrologiya',
+    dustColor: 'purple' as const,
     icon: Sparkles,
     title: 'Астрология',
     description:
@@ -17,6 +19,7 @@ const services = [
   },
   {
     id: 'taro',
+    dustColor: 'pink' as const,
     icon: Star,
     title: 'Таро',
     description:
@@ -27,6 +30,7 @@ const services = [
   },
   {
     id: 'psihologiya',
+    dustColor: 'blue' as const,
     icon: Brain,
     title: 'Психология',
     description:
@@ -37,6 +41,7 @@ const services = [
   },
   {
     id: 'kompleksnyy-podhod',
+    dustColor: 'violet' as const,
     icon: Sparkles,
     title: 'Комплексный подход',
     description:
@@ -73,7 +78,7 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className={`glass-effect rounded-2xl p-8 flex flex-col transition-all duration-300
+      className={`glass-effect rounded-2xl p-8 flex flex-col transition-all duration-300 relative
         ${isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10'}
         hover:scale-[1.02] group neon-card`}
       style={{
@@ -82,13 +87,16 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
         transition: 'box-shadow 0.3s ease',
       }}
     >
+      <div className="relative z-10 flex flex-col flex-1 min-h-0">
       <div className="flex items-center gap-3 mb-6">
         <div
-          className={`w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
-                   flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-300`}
+          className={`icon-with-starburst w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
+                   flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-300 relative overflow-visible`}
           style={{ boxShadow: service.buttonGlow }}
+          data-starburst={service.dustColor}
         >
-          <Icon className="w-8 h-8 text-white" />
+          <Icon className="w-8 h-8 text-white relative z-10" />
+          <div className="starburst-flash" aria-hidden />
         </div>
         <h3 className="text-2xl font-bold text-white flex-1 min-w-0">{service.title}</h3>
       </div>
@@ -118,6 +126,7 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
       >
         {isOpen ? 'Свернуть' : 'Подробнее'}
       </button>
+      </div>
     </motion.div>
   )
 })
@@ -125,7 +134,12 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
 export function Services() {
   return (
     <section id="methodology" className="relative py-20 px-4 z-10">
-      <div className="max-w-7xl mx-auto">
+      <div className="relative min-h-[500px]">
+        {/* Canvas в контейнере с фиксированной высотой — не ресайзится при раскрытии карточек */}
+        <div className="absolute inset-x-0 top-0 h-[1100px] z-0">
+          <CosmicDustCanvas />
+        </div>
+        <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -141,10 +155,11 @@ export function Services() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-start relative">
           {services.map((service, index) => (
             <ServiceCard key={service.id} service={service} index={index} />
           ))}
+        </div>
         </div>
       </div>
     </section>
