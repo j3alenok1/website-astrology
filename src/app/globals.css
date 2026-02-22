@@ -46,6 +46,10 @@
                 0 0 60px rgba(88, 28, 135, 0.15);
   }
 
+  .neon-card:hover {
+    box-shadow: var(--neon-glow) !important;
+  }
+
   /* Фон сайта — коллаж 6.png с обработкой под таро/астрологию */
   .photo-bg-layer {
     isolation: isolate;

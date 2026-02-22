@@ -12,6 +12,7 @@ const services = [
     description:
       'Глубокий анализ натальной карты, прогнозирование событий и понимание вашего жизненного пути через призму звезд.',
     color: 'from-purple-500 to-pink-600',
+    glow: '0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(236, 72, 153, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.05)',
   },
   {
     id: 'taro',
@@ -20,6 +21,7 @@ const services = [
     description:
       'Расклады карт Таро для получения ответов на важные вопросы и понимания текущей ситуации в различных сферах жизни.',
     color: 'from-pink-500 to-orange-500',
+    glow: '0 0 25px rgba(236, 72, 153, 0.5), 0 0 50px rgba(249, 115, 22, 0.25), inset 0 0 20px rgba(236, 72, 153, 0.05)',
   },
   {
     id: 'psihologiya',
@@ -28,6 +30,7 @@ const services = [
     description:
       'Психологический анализ и поддержка для работы с внутренними состояниями, отношениями и личностным ростом.',
     color: 'from-blue-500 to-cyan-500',
+    glow: '0 0 25px rgba(59, 130, 246, 0.5), 0 0 50px rgba(34, 211, 238, 0.25), inset 0 0 20px rgba(59, 130, 246, 0.05)',
   },
   {
     id: 'kompleksnyy-podhod',
@@ -36,6 +39,7 @@ const services = [
     description:
       'Интеграция всех трех методологий для наиболее полного и глубокого понимания вашей ситуации и путей развития.',
     color: 'from-purple-500 to-violet-600',
+    glow: '0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(124, 58, 237, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.05)',
   },
 ]
 
@@ -67,7 +71,12 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
       transition={{ delay: index * 0.1, duration: 0.6 }}
       className={`glass-effect rounded-2xl p-8 flex flex-col transition-all duration-300
         ${isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10'}
-        hover:scale-[1.02] group`}
+        hover:scale-[1.02] group neon-card`}
+      style={{
+        ['--neon-glow' as string]: service.glow,
+        boxShadow: isOpen ? service.glow : undefined,
+        transition: 'box-shadow 0.3s ease',
+      }}
     >
       <div className="flex items-center gap-3 mb-6">
         <div
