@@ -2,7 +2,7 @@
 
 import { useState, useId, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, Brain, Star, ChevronDown } from 'lucide-react'
+import { Sparkles, Brain, Star } from 'lucide-react'
 
 const services = [
   {
@@ -11,7 +11,7 @@ const services = [
     title: 'Астрология',
     description:
       'Глубокий анализ натальной карты, прогнозирование событий и понимание вашего жизненного пути через призму звезд.',
-    color: 'from-purple-500 to-purple-700',
+    color: 'from-purple-500 to-pink-600',
   },
   {
     id: 'taro',
@@ -19,7 +19,7 @@ const services = [
     title: 'Таро',
     description:
       'Расклады карт Таро для получения ответов на важные вопросы и понимания текущей ситуации в различных сферах жизни.',
-    color: 'from-pink-500 to-pink-700',
+    color: 'from-pink-500 to-orange-500',
   },
   {
     id: 'psihologiya',
@@ -27,7 +27,7 @@ const services = [
     title: 'Психология',
     description:
       'Психологический анализ и поддержка для работы с внутренними состояниями, отношениями и личностным ростом.',
-    color: 'from-blue-500 to-blue-700',
+    color: 'from-blue-500 to-cyan-500',
   },
   {
     id: 'kompleksnyy-podhod',
@@ -35,7 +35,7 @@ const services = [
     title: 'Комплексный подход',
     description:
       'Интеграция всех трех методологий для наиболее полного и глубокого понимания вашей ситуации и путей развития.',
-    color: 'from-indigo-500 to-indigo-700',
+    color: 'from-purple-500 to-violet-600',
   },
 ]
 
@@ -65,34 +65,19 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className={`glass-effect rounded-2xl p-8 cursor-pointer flex flex-col transition-all duration-300
+      className={`glass-effect rounded-2xl p-8 flex flex-col transition-all duration-300
         ${isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10'}
         hover:scale-[1.02] group`}
-      onClick={handleToggle}
     >
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-6">
         <div
           className={`w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
-                   flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                   flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300
+                   shadow-lg`}
         >
           <Icon className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-bold text-white flex-1 min-w-0">{service.title}</h3>
-      </div>
-
-      <div className="flex justify-end mt-2">
-        <div
-          className={`w-10 h-10 rounded-full flex items-center justify-center 
-                   transition-colors duration-300
-                   ${isOpen ? 'bg-white/10 text-purple-400' : 'bg-white/5 text-gray-400 group-hover:text-purple-400 group-hover:bg-white/10'}`}
-        >
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={TRANSITION}
-          >
-            <ChevronDown className="w-5 h-5" />
-          </motion.div>
-        </div>
       </div>
 
       <AnimatePresence initial={false}>
@@ -105,12 +90,21 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
             transition={TRANSITION}
             className="overflow-hidden"
           >
-            <p className="text-gray-300 leading-relaxed pt-4 border-t border-white/10">
+            <p className="text-gray-300 leading-relaxed pb-4 border-b border-white/10 mb-4">
               {service.description}
             </p>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <button
+        onClick={handleToggle}
+        className={`mt-auto w-full py-3 px-4 rounded-xl font-semibold text-white text-sm
+          bg-gradient-to-r ${service.color} hover:opacity-90 transition-opacity duration-300
+          shadow-lg shadow-purple-500/20`}
+      >
+        {isOpen ? 'Свернуть' : 'Подробнее'}
+      </button>
     </motion.div>
   )
 })
