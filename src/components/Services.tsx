@@ -13,6 +13,7 @@ const services = [
       'Глубокий анализ натальной карты, прогнозирование событий и понимание вашего жизненного пути через призму звезд.',
     color: 'from-purple-500 to-pink-600',
     glow: '0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(236, 72, 153, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.05)',
+    buttonGlow: '0 0 15px rgba(139, 92, 246, 0.6), 0 0 30px rgba(236, 72, 153, 0.3)',
   },
   {
     id: 'taro',
@@ -22,6 +23,7 @@ const services = [
       'Расклады карт Таро для получения ответов на важные вопросы и понимания текущей ситуации в различных сферах жизни.',
     color: 'from-pink-500 to-orange-500',
     glow: '0 0 25px rgba(236, 72, 153, 0.5), 0 0 50px rgba(249, 115, 22, 0.25), inset 0 0 20px rgba(236, 72, 153, 0.05)',
+    buttonGlow: '0 0 15px rgba(236, 72, 153, 0.6), 0 0 30px rgba(249, 115, 22, 0.3)',
   },
   {
     id: 'psihologiya',
@@ -31,6 +33,7 @@ const services = [
       'Психологический анализ и поддержка для работы с внутренними состояниями, отношениями и личностным ростом.',
     color: 'from-blue-500 to-cyan-500',
     glow: '0 0 25px rgba(59, 130, 246, 0.5), 0 0 50px rgba(34, 211, 238, 0.25), inset 0 0 20px rgba(59, 130, 246, 0.05)',
+    buttonGlow: '0 0 15px rgba(59, 130, 246, 0.6), 0 0 30px rgba(34, 211, 238, 0.3)',
   },
   {
     id: 'kompleksnyy-podhod',
@@ -40,6 +43,7 @@ const services = [
       'Интеграция всех трех методологий для наиболее полного и глубокого понимания вашей ситуации и путей развития.',
     color: 'from-purple-500 to-violet-600',
     glow: '0 0 25px rgba(139, 92, 246, 0.5), 0 0 50px rgba(124, 58, 237, 0.25), inset 0 0 20px rgba(139, 92, 246, 0.05)',
+    buttonGlow: '0 0 15px rgba(139, 92, 246, 0.6), 0 0 30px rgba(124, 58, 237, 0.3)',
   },
 ]
 
@@ -74,15 +78,15 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
         hover:scale-[1.02] group neon-card`}
       style={{
         ['--neon-glow' as string]: service.glow,
-        boxShadow: isOpen ? service.glow : undefined,
+        boxShadow: service.glow,
         transition: 'box-shadow 0.3s ease',
       }}
     >
       <div className="flex items-center gap-3 mb-6">
         <div
           className={`w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
-                   flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300
-                   shadow-lg`}
+                   flex items-center justify-center shrink-0 group-hover:scale-110 transition-all duration-300`}
+          style={{ boxShadow: service.buttonGlow }}
         >
           <Icon className="w-8 h-8 text-white" />
         </div>
@@ -109,8 +113,8 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
       <button
         onClick={handleToggle}
         className={`mt-auto w-full py-3 px-4 rounded-xl font-semibold text-white text-sm
-          bg-gradient-to-r ${service.color} hover:opacity-90 transition-opacity duration-300
-          shadow-lg shadow-purple-500/20`}
+          bg-gradient-to-r ${service.color} hover:opacity-90 transition-all duration-300`}
+        style={{ boxShadow: service.buttonGlow }}
       >
         {isOpen ? 'Свернуть' : 'Подробнее'}
       </button>
