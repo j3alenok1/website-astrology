@@ -95,6 +95,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
       { url: '/favicon-48.png', type: 'image/png', sizes: '48x48' },
       { url: '/favicon-tarot.svg', type: 'image/svg+xml' },
     ],
@@ -110,6 +111,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <link rel="icon" href="/favicon.ico" sizes="48x48" />
         <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
         <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'} />
         <StructuredData />
