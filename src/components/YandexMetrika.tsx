@@ -13,8 +13,8 @@ export function YandexMetrika() {
   const pathname = usePathname()
 
   useEffect(() => {
-    const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
-    if (!metrikaId || typeof window === 'undefined' || !window.ym) return
+    const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || '106988269'
+    if (typeof window === 'undefined' || !window.ym) return
 
     const id = parseInt(metrikaId, 10)
     if (isNaN(id)) return
