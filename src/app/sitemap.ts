@@ -7,19 +7,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     {
-      url: canonicalBase,
+      url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: `${canonicalBase}/relationshipastrology`,
+      url: `${baseUrl}/relationshipastrology`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${canonicalBase}/privacy`,
+      url: `${baseUrl}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.3,
