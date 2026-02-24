@@ -1,23 +1,25 @@
 import { MetadataRoute } from 'next'
 
+// Канонический домен для sitemap (Google Search Console, SEO)
+const baseUrl = 'https://astrobyndauzh.com'
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'
 
   return [
     {
-      url: baseUrl,
+      url: canonicalBase,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
     },
     {
-      url: `${baseUrl}/relationshipastrology`,
+      url: `${canonicalBase}/relationshipastrology`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/privacy`,
+      url: `${canonicalBase}/privacy`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.3,
