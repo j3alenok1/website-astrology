@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 
 declare global {
@@ -11,38 +11,6 @@ declare global {
 
 export function YandexMetrika() {
   const pathname = usePathname()
-  const initialized = useRef(false)
-
-  useEffect(() => {
-    const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
-    if (!metrikaId || typeof window === 'undefined') return
-
-    const id = parseInt(metrikaId, 10)
-    if (isNaN(id)) return
-
-    const initAndHit = () => {
-      if (initialized.current) return
-      initialized.current = true
-      window.ym?.(id, 'init', {
-        clickmap: true,
-        trackLinks: true,
-        accurateTrackBounce: true,
-        webvisor: true,
-      })
-      window.ym?.(id, 'hit', window.location.pathname + window.location.search)
-    }
-
-    if (window.ym) {
-      initAndHit()
-      return
-    }
-
-    const script = document.createElement('script')
-    script.async = true
-    script.src = 'https://mc.yandex.ru/metrika/tag.js'
-    script.onload = initAndHit
-    document.head.appendChild(script)
-  }, [])
 
   useEffect(() => {
     const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
