@@ -5,6 +5,7 @@ import './globals.css'
 import { Analytics } from '@/components/Analytics'
 import { MetaPixel } from '@/components/MetaPixel'
 import { YandexMetrika } from '@/components/YandexMetrika'
+import { ScrollDepthTracker } from '@/components/ScrollDepthTracker'
 import { StructuredData } from '@/components/StructuredData'
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] })
@@ -17,12 +18,14 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'ASTRO by NDAUZH — Астролог, Таро, Консультации онлайн',
+    default: 'Астролог в Алматы — ASTRO by NDAUZH | Консультации онлайн',
     template: '%s | ASTRO by NDAUZH',
   },
   description:
-    'Персональные астрологические и тарологические консультации. Разбор натальной карты, соляр, совместимость, детская карта, профориентация. Онлайн по всему миру. Россия, Казахстан.',
+    'Астролог в Алматы. Персональные консультации по астрологии и Таро: разбор натальной карты, соляр, совместимость, профориентация. Онлайн и очно в Алматы. Казахстан, Россия.',
   keywords: [
+    'астролог алматы',
+    'астролог в алматы',
     'астролог',
     'астролог онлайн',
     'консультация астролога',
@@ -69,9 +72,9 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'ASTRO by NDAUZH — Астролог, Таро, Консультации',
+    title: 'Астролог в Алматы — ASTRO by NDAUZH | Консультации',
     description:
-      'Персональные астрологические и тарологические консультации. Разбор натальной карты, соляр, совместимость. Онлайн по всему миру.',
+      'Астролог в Алматы. Консультации по астрологии и Таро: натальная карта, соляр, совместимость. Онлайн и очно.',
     type: 'website',
     locale: 'ru_RU',
     url: '/',
@@ -79,8 +82,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ASTRO by NDAUZH — Астролог, Таро',
-    description: 'Консультации по астрологии и Таро онлайн. Россия, Казахстан, весь мир.',
+    title: 'Астролог в Алматы — ASTRO by NDAUZH',
+    description: 'Астролог в Алматы. Консультации по астрологии и Таро онлайн и очно.',
   },
   robots: {
     index: true,
@@ -119,6 +122,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <Analytics />
           <YandexMetrika />
+          <ScrollDepthTracker />
         </Suspense>
         <MetaPixel />
       </body>

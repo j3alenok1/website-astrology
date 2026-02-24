@@ -1,6 +1,7 @@
 'use client'
 
 import { MessageCircle, MapPin } from 'lucide-react'
+import { reachGoal } from '@/lib/metrika'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -14,7 +15,7 @@ export function Footer() {
             <div className="space-y-3 text-gray-300">
               <div className="flex items-center gap-3">
                 <MessageCircle className="w-5 h-5 text-purple-400" />
-                <a href="https://wa.clck.bar/77759098093" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">WhatsApp</a>
+                <a href="https://wa.clck.bar/77759098093" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_whatsapp')}>WhatsApp</a>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-purple-400" />
@@ -26,20 +27,20 @@ export function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-4 gradient-text">Услуги</h3>
             <ul className="space-y-2 text-gray-300">
-              <li><a href="#services" className="hover:text-purple-400 transition-colors">Астрология</a></li>
-              <li><a href="#services" className="hover:text-purple-400 transition-colors">Таро</a></li>
-              <li><a href="#services" className="hover:text-purple-400 transition-colors">Психология</a></li>
-              <li><a href="#booking" className="hover:text-purple-400 transition-colors">Записаться</a></li>
-              <li><a href="/relationshipastrology" className="hover:text-purple-400 transition-colors">Астрология Отношений</a></li>
+              <li><a href="#services" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_service', { service: 'astrology' })}>Астрология</a></li>
+              <li><a href="#services" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_service', { service: 'taro' })}>Таро</a></li>
+              <li><a href="#services" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_service', { service: 'psychology' })}>Психология</a></li>
+              <li><a href="#booking" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_booking')}>Записаться</a></li>
+              <li><a href="/relationshipastrology" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_relationship')}>Астрология Отношений</a></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-xl font-bold mb-4 gradient-text">Информация</h3>
             <ul className="space-y-2 text-gray-300">
-              <li><a href="#methodology" className="hover:text-purple-400 transition-colors">Методология</a></li>
-              <li><a href="#faq" className="hover:text-purple-400 transition-colors">FAQ</a></li>
-              <li><a href="/privacy" className="hover:text-purple-400 transition-colors">Политика конфиденциальности</a></li>
+              <li><a href="#methodology" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_methodology')}>Методология</a></li>
+              <li><a href="#faq" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_faq')}>FAQ</a></li>
+              <li><a href="/privacy" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_privacy')}>Политика конфиденциальности</a></li>
             </ul>
           </div>
         </div>

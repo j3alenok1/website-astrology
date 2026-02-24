@@ -4,8 +4,7 @@ import { PhotoBackground } from '@/components/PhotoBackground'
 import { RelationshipAstrologyContent } from '@/components/RelationshipAstrologyContent'
 import { PaymentFormMinimal } from '@/components/PaymentFormMinimal'
 import { Footer } from '@/components/Footer'
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { BackToHomeLink } from '@/components/BackToHomeLink'
 
 export const metadata = {
   title: 'Астрология Отношений — живая встреча в Алматы',
@@ -20,13 +19,7 @@ export default function RelationshipAstrologyPage() {
       <NebulaBg />
 
       <div className="relative z-10 pt-6 px-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors mb-8"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          На главную
-        </Link>
+        <BackToHomeLink />
       </div>
 
       <RelationshipAstrologyContent />

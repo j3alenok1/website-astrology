@@ -3,11 +3,13 @@
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { products } from '@/lib/products'
+import { reachGoal } from '@/lib/metrika'
 
 export function Products() {
   const router = useRouter()
 
   const scrollToBooking = (productSlug: string) => {
+    reachGoal('click_product', { product: productSlug })
     const params = new URLSearchParams(window.location.search)
     params.set('product', productSlug)
     const url = `/?${params.toString()}`

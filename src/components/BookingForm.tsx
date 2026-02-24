@@ -8,6 +8,7 @@ import ReCAPTCHA from 'react-google-recaptcha'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { getUTMParams, formatPhoneMask, isValidPhone } from '@/lib/utils'
+import { reachGoal } from '@/lib/metrika'
 import { getProductBySlug } from '@/lib/products'
 import type { LeadFormData } from '@/types'
 
@@ -400,7 +401,10 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                   <button
                     type="button"
                     disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
-                    onClick={() => setShowPaymentMessage(true)}
+                    onClick={() => {
+                    reachGoal('click_payment_intent', { product: selectedProduct.slug })
+                    setShowPaymentMessage(true)
+                  }}
                     className="flex-1 px-5 py-2.5 text-sm bg-gradient-to-r from-green-600 to-emerald-600 
                              rounded-full text-white font-semibold hover:from-green-500 
                              hover:to-emerald-500 transition-all duration-300

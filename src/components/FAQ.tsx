@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import { reachGoal } from '@/lib/metrika'
 
 const faqs = [
   {
@@ -56,7 +57,11 @@ export function FAQ() {
               className="glass-effect rounded-xl overflow-hidden"
             >
               <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                onClick={() => {
+                  const willOpen = openIndex !== index
+                  if (willOpen) reachGoal('faq_open', { index: String(index) })
+                  setOpenIndex(openIndex === index ? null : index)
+                }}
                 className="w-full px-6 py-4 flex items-center justify-between text-left 
                          hover:bg-white/10 transition-colors"
               >

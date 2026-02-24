@@ -4,14 +4,26 @@ export function StructuredData() {
   const localBusiness = {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
-    name: 'ASTRO by NDAUZH',
+    name: 'ASTRO by NDAUZH — Астролог в Алматы',
     description:
-      'Персональные астрологические и тарологические консультации. Разбор натальной карты, соляр, совместимость, детская карта, профориентация. Онлайн по всему миру.',
+      'Астролог в Алматы. Персональные консультации по астрологии и Таро: разбор натальной карты, соляр, совместимость, профориентация. Онлайн и очно.',
     url: baseUrl,
     image: `${baseUrl}/favicon-tarot.svg`,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Алматы',
+      addressRegion: 'Алматы',
+      addressCountry: 'KZ',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: 43.238949,
+      longitude: 76.945465,
+    },
     areaServed: [
-      { '@type': 'Country', name: 'Россия' },
+      { '@type': 'City', name: 'Алматы' },
       { '@type': 'Country', name: 'Казахстан' },
+      { '@type': 'Country', name: 'Россия' },
       { '@type': 'Place', name: 'Онлайн по всему миру' },
     ],
     priceRange: '₸₸',
@@ -27,9 +39,9 @@ export function StructuredData() {
   const website = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'ASTRO by NDAUZH',
+    name: 'ASTRO by NDAUZH — Астролог в Алматы',
     url: baseUrl,
-    description: 'Астролог и таро. Консультации онлайн. Россия, Казахстан, весь мир.',
+    description: 'Астролог в Алматы. Консультации по астрологии и Таро онлайн и очно.',
     inLanguage: 'ru',
   }
 

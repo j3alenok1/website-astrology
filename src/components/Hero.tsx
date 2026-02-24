@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
+import { reachGoal } from '@/lib/metrika'
 
 export function Hero() {
   return (
@@ -15,6 +16,7 @@ export function Hero() {
           <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-gray-200">
             ASTRO by NDAUZH
           </h1>
+          <p className="text-sm md:text-base text-purple-300 mb-2">Астролог в Алматы · Консультации онлайн и очно</p>
           <p className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
             Астрология — твой ключ к лучшей жизни!
           </p>
@@ -33,6 +35,7 @@ export function Hero() {
               className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-white font-semibold 
                        hover:from-purple-500 hover:to-pink-500 transition-all duration-300 cosmic-glow
                        transform hover:scale-105"
+              onClick={() => reachGoal('click_hero_booking')}
             >
               Записаться на консультацию
             </a>
@@ -40,6 +43,7 @@ export function Hero() {
               href="#methodology"
               className="px-8 py-4 glass-effect rounded-full text-white font-semibold 
                        hover:bg-white/20 transition-all duration-300"
+              onClick={() => reachGoal('click_hero_methodology')}
             >
               Как я работаю
             </a>
@@ -52,7 +56,7 @@ export function Hero() {
           transition={{ delay: 0.8, duration: 1 }}
           className="mt-10"
         >
-          <a href="#products" className="inline-block animate-bounce">
+          <a href="#products" className="inline-block animate-bounce" onClick={() => reachGoal('click_hero_products')}>
             <ArrowDown className="w-8 h-8 text-purple-400" />
           </a>
         </motion.div>

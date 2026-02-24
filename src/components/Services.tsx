@@ -4,6 +4,7 @@ import { useState, useId, memo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Brain, Star } from 'lucide-react'
 import { CosmicDustCanvas } from './CosmicDustCanvas'
+import { reachGoal } from '@/lib/metrika'
 
 const services = [
   {
@@ -81,6 +82,8 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
   const handleToggle = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+    const willOpen = !isOpen
+    if (willOpen) reachGoal('methodology_detail', { service: service.id })
     setIsOpen((prev) => !prev)
   }
 
