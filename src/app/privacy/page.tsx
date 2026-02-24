@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Политика конфиденциальности | Astro Consult',
   description: 'Политика конфиденциальности и обработки персональных данных',
+  alternates: { canonical: 'https://astrobyndauzh.com/privacy' },
 }
 
 export default function PrivacyPage() {

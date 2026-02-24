@@ -1,5 +1,10 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { Hero } from '@/components/Hero'
+
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://astrobyndauzh.com/' },
+}
 import { SpecialistSection } from '@/components/SpecialistSection'
 import { Services } from '@/components/Services'
 import { Products } from '@/components/Products'

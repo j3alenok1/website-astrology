@@ -67,10 +67,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'ASTRO by NDAUZH', url: 'https://astrobyndauzh.com' }],
   creator: 'ASTRO by NDAUZH',
   publisher: 'ASTRO by NDAUZH',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'),
-  alternates: {
-    canonical: '/',
-  },
+  metadataBase: new URL('https://astrobyndauzh.com'),
   openGraph: {
     title: 'Астролог в Алматы — ASTRO by NDAUZH | Консультации',
     description:
@@ -113,7 +110,6 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.ico" sizes="48x48" />
         <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
-        <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'} />
         <StructuredData />
         <script
           dangerouslySetInnerHTML={{

@@ -10,6 +10,7 @@ export const metadata = {
   title: 'Астрология Отношений — живая встреча в Алматы',
   description:
     'Живой мастер-класс по астрологии отношений в Алматы. Научитесь считывать натальную карту для гармоничных отношений. В подарок — календарь на год.',
+  alternates: { canonical: 'https://astrobyndauzh.com/relationshipastrology' },
 }
 
 export default function RelationshipAstrologyPage() {
