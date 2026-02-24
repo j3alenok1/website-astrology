@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Suspense } from 'react'
-import Script from 'next/script'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
 import { MetaPixel } from '@/components/MetaPixel'
@@ -104,33 +103,16 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-tarot.svg" type="image/svg+xml" />
         <link rel="canonical" href={process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'} />
         <StructuredData />
-        {(() => {
-          const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || '106988269'
-          return (
-            <>
-              <Script
-                id="yandex-metrika"
-                strategy="beforeInteractive"
-                dangerouslySetInnerHTML={{
-                  __html: `
-                    (function(m,e,t,r,i,k,a){
-                      m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-                      m[i].l=1*new Date();
-                      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-                      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-                    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=${metrikaId}", "ym");
-                    ym(${metrikaId}, "init", {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-                  `,
-                }}
-              />
-              <noscript>
-                <div>
-                  <img src={`https://mc.yandex.ru/watch/${metrikaId}`} style={{ position: 'absolute', left: '-9999px' }} alt="" />
-                </div>
-              </noscript>
-            </>
-          )
-        })()}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r)return;}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js?id=106988269","ym");ym(106988269,"init",{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});`,
+          }}
+        />
+        <noscript>
+          <div>
+            <img src="https://mc.yandex.ru/watch/106988269" style={{ position: 'absolute', left: '-9999px' }} alt="" />
+          </div>
+        </noscript>
       </head>
       <body className={inter.className}>
         {children}
