@@ -22,18 +22,5 @@ export function YandexMetrika() {
     window.ym(id, 'hit', pathname)
   }, [pathname])
 
-  const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
-  if (!metrikaId) return null
-
-  return (
-    <noscript>
-      <div>
-        <img
-          src={`https://mc.yandex.ru/watch/${metrikaId}`}
-          style={{ position: 'absolute', left: '-9999px' }}
-          alt=""
-        />
-      </div>
-    </noscript>
-  )
+  return null
 }
