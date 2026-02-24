@@ -51,6 +51,84 @@
     box-shadow: var(--neon-glow) !important;
   }
 
+  /* Карточка Астрология — «вау»: микро-искры в card-inner */
+  .card-astrology {
+    position: relative;
+    z-index: 1;
+    border-radius: 20px;
+    overflow: visible;
+    background: transparent !important;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    /* box-shadow:
+      inset 0 0 40px rgba(255, 0, 255, 0.15),
+      0 0 40px rgba(180, 0, 255, 0.25) !important; */
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+  }
+  .card-inner {
+    position: relative;
+    z-index: 1;
+  }
+  .card-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(255, 255, 255, 0.8), transparent),
+      radial-gradient(1px 1px at 80% 40%, rgba(255, 255, 255, 0.6), transparent),
+      radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.9), transparent);
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .card-astrology:hover {
+    box-shadow:
+      inset 0 0 40px rgba(255, 0, 255, 0.15),
+      0 0 50px rgba(255, 0, 255, 0.5),
+      0 0 100px rgba(0, 150, 255, 0.4) !important;
+    transform: translateY(-5px) scale(1.02);
+  }
+  .card-astrology .magic-btn {
+    background: linear-gradient(90deg, #8e2de2, #ff4ecd) !important;
+    border: none !important;
+    box-shadow:
+      0 0 20px rgba(255, 0, 255, 0.6),
+      0 0 40px rgba(140, 0, 255, 0.4) !important;
+    transition: box-shadow 0.3s ease;
+  }
+  .card-astrology .magic-btn:hover {
+    box-shadow:
+      0 0 30px rgba(255, 0, 255, 0.8),
+      0 0 60px rgba(140, 0, 255, 0.6) !important;
+  }
+
+
+  /* Neon Glass кнопки — shine и glow как в контекстном меню */
+  .neon-glass-btn {
+    position: relative;
+    overflow: visible;
+    isolation: isolate;
+  }
+  .neon-glass-btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from -45deg at 80% 20%,
+      transparent 12%,
+      rgba(255, 255, 255, 0.4) 25%,
+      rgba(255, 255, 255, 0.15) 40%,
+      transparent 55%
+    ) border-box;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: subtract;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   /* Canvas космической пыли — fixed, fullscreen, поверх тумана */
   #dust {
     position: fixed;

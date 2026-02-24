@@ -84,22 +84,21 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
     setIsOpen((prev) => !prev)
   }
 
-  return (
+  const cardContent = (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.6 }}
-      className={`glass-effect rounded-2xl p-8 flex flex-col transition-all duration-300 relative
-        ${isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10'}
+      className={`rounded-2xl p-8 flex flex-col transition-all duration-300 relative
+        ${service.id === 'astrologiya' ? 'card-astrology' : 'glass-effect'}
+        ${service.id !== 'astrologiya' ? (isOpen ? '!bg-white/15' : '!bg-white/5 hover:!bg-white/10') : ''}
         hover:scale-[1.02] group neon-card`}
       style={{
         ['--neon-glow' as string]: service.glow,
-        boxShadow: service.glow,
-        transition: 'box-shadow 0.3s ease',
       }}
     >
-      <div className="relative z-10 flex flex-col flex-1 min-h-0">
+      <div className={`relative z-10 flex flex-col flex-1 min-h-0 ${service.id === 'astrologiya' ? 'card-inner' : ''}`}>
       <div className="flex items-center gap-3 mb-6">
         <div
           className={`icon-with-starburst w-16 h-16 rounded-full bg-gradient-to-br ${service.color} 
@@ -122,7 +121,7 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
           <motion.div
             key={`${uniqueId}-content`}
             initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
+            animate={{ height: 160, opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={TRANSITION}
             className="overflow-hidden"
@@ -136,8 +135,9 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
 
       <button
         onClick={handleToggle}
-        className="mt-auto w-full py-3 px-4 rounded-full font-semibold text-white text-sm
-          backdrop-blur-sm border hover:opacity-90 transition-all duration-300"
+        className={`neon-glass-btn mt-auto w-full py-3 px-4 rounded-full font-semibold text-white text-sm
+          backdrop-blur-sm border hover:opacity-90 transition-all duration-300
+          ${service.id === 'astrologiya' ? 'magic-btn' : ''}`}
         style={{
           background: service.buttonBg,
           borderColor: service.buttonBorder,
@@ -149,6 +149,8 @@ const ServiceCard = memo(function ServiceCard({ service, index }: ServiceCardPro
       </div>
     </motion.div>
   )
+
+  return cardContent
 })
 
 export function Services() {
