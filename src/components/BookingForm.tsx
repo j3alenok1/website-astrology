@@ -117,6 +117,10 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'conversion', { send_to: process.env.NEXT_PUBLIC_GA_ID })
       }
+      if (typeof window !== 'undefined' && window.ym) {
+        const metrikaId = process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID
+        if (metrikaId) window.ym(parseInt(metrikaId, 10), 'reachGoal', 'lead_submit')
+      }
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'Lead')
       }
