@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { formatDate } from '@/lib/utils'
-import { Download, Eye, CheckCircle, XCircle, Clock, FileSpreadsheet } from 'lucide-react'
+import { Download, Eye, CheckCircle, XCircle, Clock, FileSpreadsheet, Trash2 } from 'lucide-react'
 
 interface Lead {
   id: string
@@ -30,8 +30,10 @@ export function LeadsList() {
   const [loading, setLoading] = useState(true)
   const [selectedStatus, setSelectedStatus] = useState<string>('all')
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [deleting, setDeleting] = useState(false)
 
   const fetchLeads = useCallback(async () => {
     setLoading(true)
@@ -59,6 +61,44 @@ export function LeadsList() {
   useEffect(() => {
     fetchLeads()
   }, [fetchLeads])
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === leads.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(leads.map((l) => l.id)))
+    }
+  }
+
+  const deleteLeads = async (ids: string[]) => {
+    if (ids.length === 0) return
+    if (!confirm(`Удалить ${ids.length} заявок?`)) return
+    setDeleting(true)
+    try {
+      const res = await fetch('/api/admin/leads', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      })
+      if (!res.ok) throw new Error('Ошибка удаления')
+      setSelectedIds(new Set())
+      fetchLeads()
+    } catch (error) {
+      console.error(error)
+      alert('Ошибка при удалении')
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   const updateLeadStatus = async (id: string, status: string) => {
     try {
@@ -144,6 +184,17 @@ export function LeadsList() {
             <Download className="w-4 h-4" />
             CSV
           </button>
+          {selectedIds.size > 0 && (
+            <button
+              onClick={() => deleteLeads(Array.from(selectedIds))}
+              disabled={deleting}
+              className="px-4 py-2 bg-red-600/80 rounded-lg text-white hover:bg-red-500 
+                       transition-colors flex items-center gap-2 border border-red-400/30 disabled:opacity-50"
+            >
+              <Trash2 className="w-4 h-4" />
+              Удалить ({selectedIds.size})
+            </button>
+          )}
         </div>
         <div className="text-white">
           Всего: {leads.length} заявок
@@ -155,6 +206,14 @@ export function LeadsList() {
           <table className="w-full">
             <thead className="bg-white/10">
               <tr>
+                <th className="px-4 py-4">
+                  <input
+                    type="checkbox"
+                    checked={leads.length > 0 && selectedIds.size === leads.length}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-white/30 bg-white/10"
+                  />
+                </th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Имя</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Продукт</th>
                 <th className="px-6 py-4 text-left text-white font-semibold">Оплата</th>
@@ -169,6 +228,14 @@ export function LeadsList() {
             <tbody className="divide-y divide-white/10">
               {leads.map((lead) => (
                 <tr key={lead.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-4 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(lead.id)}
+                      onChange={() => toggleSelect(lead.id)}
+                      className="w-4 h-4 rounded border-white/30 bg-white/10"
+                    />
+                  </td>
                   <td className="px-6 py-4 text-white">{lead.name}</td>
                   <td className="px-6 py-4 text-gray-300">
                     {lead.productTitle ? (
@@ -217,6 +284,14 @@ export function LeadsList() {
                         title="Просмотр"
                       >
                         <Eye className="w-4 h-4 text-white" />
+                      </button>
+                      <button
+                        onClick={() => deleteLeads([lead.id])}
+                        disabled={deleting}
+                        className="p-2 bg-red-600/80 rounded-lg hover:bg-red-500 transition-colors border border-red-400/30 disabled:opacity-50"
+                        title="Удалить"
+                      >
+                        <Trash2 className="w-4 h-4 text-white" />
                       </button>
                       {lead.status === 'new' && (
                         <button
@@ -332,6 +407,25 @@ export function LeadsList() {
               <div>
                 <strong>Дата создания:</strong> {formatDate(selectedLead.createdAt)}
               </div>
+            </div>
+            <div className="mt-6 pt-4 border-t border-white/20 flex gap-3 justify-end">
+              <button
+                onClick={() => setSelectedLead(null)}
+                className="px-6 py-2 bg-purple-600/80 rounded-lg text-white hover:bg-purple-500 transition-colors font-medium"
+              >
+                ОК
+              </button>
+              <button
+                onClick={() => {
+                  deleteLeads([selectedLead.id])
+                  setSelectedLead(null)
+                }}
+                disabled={deleting}
+                className="px-4 py-2 bg-red-600/80 rounded-lg text-white hover:bg-red-500 transition-colors flex items-center gap-2 disabled:opacity-50"
+              >
+                <Trash2 className="w-4 h-4" />
+                Удалить заявку
+              </button>
             </div>
           </div>
         </div>

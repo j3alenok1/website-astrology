@@ -70,3 +70,29 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const ids = Array.isArray(body.ids) ? body.ids : body.id ? [body.id] : []
+
+    if (ids.length === 0) {
+      return NextResponse.json({ error: 'Укажите id или ids' }, { status: 400 })
+    }
+
+    const result = await prisma.lead.deleteMany({
+      where: { id: { in: ids } },
+    })
+
+    return NextResponse.json({ deleted: result.count })
+  } catch (error) {
+    console.error('Error deleting leads:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
