@@ -247,7 +247,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                       onChange={field.onChange}
                       onBlur={field.onBlur}
                       error={errors.birthDate?.message}
-                      placeholder="Выберите дату"
+                      placeholder="ДД.ММ.ГГГГ"
                     />
                   )}
                 />
