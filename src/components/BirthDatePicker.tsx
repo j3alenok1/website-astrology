@@ -36,9 +36,11 @@ export function BirthDatePicker({ value, onChange, onBlur, error, placeholder = 
     }
   }
 
-  const handleSelect = (date: Date) => {
-    onChange(format(date, 'yyyy-MM-dd'))
-    setIsOpen(false)
+  const handleSelect = (date: Date | null) => {
+    if (date) {
+      onChange(format(date, 'yyyy-MM-dd'))
+      setIsOpen(false)
+    }
   }
 
   return (
