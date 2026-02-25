@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation'
 import { getUTMParams, formatPhoneMask, isValidPhone } from '@/lib/utils'
 import { reachGoal } from '@/lib/metrika'
 import { getProductBySlug } from '@/lib/products'
+import { BirthDatePicker } from '@/components/BirthDatePicker'
 import type { LeadFormData } from '@/types'
 
 function isValidBirthDate(val: string): boolean {
@@ -237,14 +238,19 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-white font-medium mb-2">Дата рождения *</label>
-                <input
-                  {...register('birthDate')}
-                  type="date"
-                  className="form-input"
+                <Controller
+                  name="birthDate"
+                  control={control}
+                  render={({ field }) => (
+                    <BirthDatePicker
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      error={errors.birthDate?.message}
+                      placeholder="Выберите дату"
+                    />
+                  )}
                 />
-                {errors.birthDate && (
-                  <p className="text-red-400 text-sm mt-1">{errors.birthDate.message}</p>
-                )}
               </div>
 
               <div>

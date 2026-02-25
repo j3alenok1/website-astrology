@@ -472,3 +472,50 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-purple-500;
 }
+
+/* BirthDatePicker — тёмная тема, удобно на мобильных */
+.birth-date-calendar .react-datepicker__header {
+  @apply bg-slate-800 border-white/20 text-white;
+}
+.birth-date-calendar .react-datepicker__current-month,
+.birth-date-calendar .react-datepicker__day-name {
+  @apply text-white;
+}
+.birth-date-calendar .react-datepicker__day {
+  @apply text-gray-200 w-10 h-10 leading-10 text-base;
+}
+.birth-date-calendar .react-datepicker__day:hover {
+  @apply bg-purple-500/50 text-white rounded-full;
+}
+.birth-date-calendar .react-datepicker__day--selected {
+  @apply bg-purple-600 text-white rounded-full;
+}
+.birth-date-calendar .react-datepicker__day--keyboard-selected {
+  @apply bg-purple-500/70 text-white rounded-full;
+}
+.birth-date-calendar .react-datepicker__day--disabled {
+  @apply text-gray-500;
+}
+.birth-date-calendar .react-datepicker__month-dropdown,
+.birth-date-calendar .react-datepicker__year-dropdown {
+  @apply bg-slate-800 border-white/20;
+}
+.birth-date-calendar .react-datepicker__month-option,
+.birth-date-calendar .react-datepicker__year-option {
+  @apply text-white hover:bg-purple-600/50 py-2;
+}
+.birth-date-calendar .react-datepicker__navigation {
+  @apply text-white;
+}
+.birth-date-calendar .react-datepicker__navigation:hover * {
+  @apply border-white;
+}
+/* Мобильные: крупные ячейки для удобного тапа */
+@media (max-width: 768px) {
+  .birth-date-calendar .react-datepicker__day {
+    @apply w-11 h-11 leading-[2.75rem] text-base;
+  }
+  .birth-date-calendar .react-datepicker {
+    @apply text-base;
+  }
+}
