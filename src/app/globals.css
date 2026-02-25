@@ -473,7 +473,10 @@ html {
   @apply bg-purple-500;
 }
 
-/* BirthDatePicker — тёмная тема, удобно на мобильных */
+/* BirthDatePicker — тёмная тема, все числа видны */
+.birth-date-calendar.react-datepicker {
+  @apply bg-slate-800 text-white border-0;
+}
 .birth-date-calendar .react-datepicker__header {
   @apply bg-slate-800 border-white/20 text-white;
 }
@@ -481,8 +484,14 @@ html {
 .birth-date-calendar .react-datepicker__day-name {
   @apply text-white;
 }
+.birth-date-calendar .react-datepicker__month-container {
+  @apply bg-slate-800;
+}
 .birth-date-calendar .react-datepicker__day {
-  @apply text-gray-200 w-10 h-10 leading-10 text-base;
+  @apply text-gray-100 w-10 h-10 leading-10 text-base;
+}
+.birth-date-calendar .react-datepicker__day--outside-month {
+  @apply text-gray-400 opacity-100;
 }
 .birth-date-calendar .react-datepicker__day:hover {
   @apply bg-purple-500/50 text-white rounded-full;

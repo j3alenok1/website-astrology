@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import { ru } from 'date-fns/locale'
 import { format, parse, isValid } from 'date-fns'
@@ -15,8 +15,40 @@ interface BirthDatePickerProps {
   placeholder?: string
 }
 
-export function BirthDatePicker({ value, onChange, onBlur, error, placeholder = 'Выберите дату' }: BirthDatePickerProps) {
+function parseInputToDate(s: string): Date | null {
+  const cleaned = s.replace(/\s/g, '').replace(/[./-]/g, '.')
+  const match = cleaned.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/)
+  if (!match) return null
+  const [, d, m, y] = match
+  const day = parseInt(d, 10)
+  const month = parseInt(m, 10) - 1
+  const year = parseInt(y, 10)
+  if (year < 1900 || year > new Date().getFullYear()) return null
+  if (month < 0 || month > 11) return null
+  if (day < 1 || day > 31) return null
+  const date = new Date(year, month, day)
+  if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) return null
+  const today = new Date()
+  today.setHours(23, 59, 59, 999)
+  return date <= today ? date : null
+}
+
+export function BirthDatePicker({ value, onChange, onBlur, error, placeholder = 'ДД.ММ.ГГГГ' }: BirthDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [inputValue, setInputValue] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (value) {
+      try {
+        const parsed = parse(value, 'yyyy-MM-dd', new Date())
+        if (isValid(parsed)) setInputValue(null)
+      } catch {
+        setInputValue(null)
+      }
+    } else {
+      setInputValue(null)
+    }
+  }, [value])
 
   let dateValue: Date | null = null
   if (value) {
@@ -28,32 +60,65 @@ export function BirthDatePicker({ value, onChange, onBlur, error, placeholder = 
     }
   }
 
-  const displayValue = dateValue ? format(dateValue, 'dd.MM.yyyy') : value || ''
+  const displayValue = inputValue !== null ? inputValue : (dateValue ? format(dateValue, 'dd.MM.yyyy') : '')
 
   const handleChange = (date: Date | null) => {
     if (date) {
       onChange(format(date, 'yyyy-MM-dd'))
+      setInputValue(null)
     }
   }
 
   const handleSelect = (date: Date | null) => {
     if (date) {
       onChange(format(date, 'yyyy-MM-dd'))
+      setInputValue(null)
       setIsOpen(false)
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value
+    setInputValue(v)
+    const parsed = parseInputToDate(v)
+    if (parsed) {
+      onChange(format(parsed, 'yyyy-MM-dd'))
+    } else if (v.length === 0) {
+      onChange('')
+    }
+  }
+
+  const handleInputBlur = () => {
+    onBlur?.()
+    const v = inputValue ?? ''
+    if (v && !parseInputToDate(v)) {
+      setInputValue(null)
+    } else {
+      setInputValue(null)
     }
   }
 
   return (
     <div className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        onBlur={onBlur}
-        className="form-input flex items-center justify-between gap-2 text-left cursor-pointer"
-      >
-        <span className={displayValue ? 'text-white' : 'text-gray-400'}>{displayValue || placeholder}</span>
-        <Calendar className="w-5 h-5 text-purple-400 shrink-0" />
-      </button>
+      <div className="form-input flex items-center gap-2">
+        <input
+          type="text"
+          inputMode="numeric"
+          value={displayValue}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          placeholder={placeholder}
+          className="flex-1 min-w-0 bg-transparent border-none outline-none text-white placeholder-gray-400"
+        />
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="shrink-0 p-1 rounded-lg hover:bg-white/10 transition-colors"
+          aria-label="Открыть календарь"
+        >
+          <Calendar className="w-5 h-5 text-purple-400" />
+        </button>
+      </div>
 
       {isOpen && (
         <>
