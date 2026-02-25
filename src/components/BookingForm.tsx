@@ -228,9 +228,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
               <input
                 {...register('name')}
                 type="text"
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 
-                         focus:ring-purple-500 focus:border-transparent"
+                className="form-input"
                 placeholder="Ваше имя"
               />
               {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
@@ -242,9 +240,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                 <input
                   {...register('birthDate')}
                   type="date"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                           text-white focus:outline-none focus:ring-2 focus:ring-purple-500 
-                           focus:border-transparent"
+                  className="form-input"
                 />
                 {errors.birthDate && (
                   <p className="text-red-400 text-sm mt-1">{errors.birthDate.message}</p>
@@ -256,9 +252,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                 <input
                   {...register('birthTime')}
                   type="time"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                           text-white focus:outline-none focus:ring-2 focus:ring-purple-500 
-                           focus:border-transparent"
+                  className="form-input"
                 />
               </div>
             </div>
@@ -268,9 +262,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
               <input
                 {...register('city')}
                 type="text"
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 
-                         focus:ring-purple-500 focus:border-transparent"
+                className="form-input"
                 placeholder="Город проживания"
               />
               {errors.city && <p className="text-red-400 text-sm mt-1">{errors.city.message}</p>}
@@ -281,9 +273,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
               <input
                 {...register('birthCity')}
                 type="text"
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 
-                         focus:ring-purple-500 focus:border-transparent"
+                className="form-input"
                 placeholder="Город, в котором вы родились"
               />
               {errors.birthCity && (
@@ -303,9 +293,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                     type="tel"
                     inputMode="numeric"
                     autoComplete="tel"
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                             text-white placeholder-gray-400 focus:outline-none focus:ring-2 
-                             focus:ring-purple-500 focus:border-transparent"
+                    className="form-input"
                     placeholder="+7 (999) 999-99-99"
                     onChange={(e) => {
                       const formatted = formatPhoneMask(e.target.value)
@@ -325,9 +313,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                 {...register('request')}
                 rows={5}
                 maxLength={1500}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg 
-                         text-white placeholder-gray-400 focus:outline-none focus:ring-2 
-                         focus:ring-purple-500 focus:border-transparent resize-none"
+                className="form-input form-textarea"
                 placeholder="Опишите, с чем вы хотели бы поработать..."
               />
               <p className="text-right text-gray-400 text-xs mt-1">{(watch('request') || '').length} / 1500</p>
