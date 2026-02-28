@@ -11,7 +11,6 @@ import { Products } from '@/components/Products'
 import { Methodology } from '@/components/Methodology'
 import { BookingForm } from '@/components/BookingForm'
 import { FAQ } from '@/components/FAQ'
-import { SeoBlock } from '@/components/SeoBlock'
 import { Footer } from '@/components/Footer'
 import { NebulaBg } from '@/components/NebulaBg'
 import { PhotoBackground } from '@/components/PhotoBackground'
@@ -34,7 +33,6 @@ export default function Home() {
         <BookingForm />
       </Suspense>
       <FAQ />
-      <SeoBlock />
       <Footer />
     </main>
   )
