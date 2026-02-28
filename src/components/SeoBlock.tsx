@@ -29,10 +29,16 @@ export function SeoBlock() {
               <strong>Таро</strong> — быстрые ответы на конкретные вопросы без долгого разбора карты. Один расклад, одна тема. <strong>Консультация астролога и Таро</strong> доступна на русском и английском языках — работаю с клиентами по всему миру.
             </p>
             <p>
-              Очно: {CONTACTS.address.display}. Онлайн: Zoom, WhatsApp — для жителей любых городов и стран. Подробнее об услугах, ценах и формате работы — на странице{' '}
-              <Link href="/astrolog-almaty" className="text-purple-300 hover:text-white underline underline-offset-2">
-                Астролог в Алматы
-              </Link>
+              Очно: {CONTACTS.address.display}. Онлайн: Zoom, WhatsApp — для жителей любых городов и стран.               Подробнее об услугах, ценах и формате работы — на страницах{' '}
+              <Link href="/astrolog-almaty" className="text-purple-300 hover:text-white underline underline-offset-2">Астролог в Алматы</Link>
+              ,{' '}
+              <Link href="/astrolog-online" className="text-purple-300 hover:text-white underline underline-offset-2">Астролог онлайн</Link>
+              ,{' '}
+              <Link href="/astrolog-moscow" className="text-purple-300 hover:text-white underline underline-offset-2">Москва</Link>
+              ,{' '}
+              <Link href="/astrolog-russia" className="text-purple-300 hover:text-white underline underline-offset-2">Россия</Link>
+              ,{' '}
+              <Link href="/astrolog-kazakhstan" className="text-purple-300 hover:text-white underline underline-offset-2">Казахстан</Link>
               .
             </p>
           </div>

@@ -35,6 +35,10 @@ export function Footer() {
               <li><a href="#services" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_service', { service: 'psychology' })}>Психология</a></li>
               <li><a href="#booking" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_booking')}>Записаться</a></li>
               <li><a href="/astrolog-almaty" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_astrolog_almaty')}>Астролог в Алматы</a></li>
+              <li><a href="/astrolog-online" className="hover:text-purple-400 transition-colors">Астролог онлайн</a></li>
+              <li><a href="/astrolog-moscow" className="hover:text-purple-400 transition-colors">Астролог Москва</a></li>
+              <li><a href="/astrolog-russia" className="hover:text-purple-400 transition-colors">Астролог Россия</a></li>
+              <li><a href="/astrolog-kazakhstan" className="hover:text-purple-400 transition-colors">Астролог Казахстан</a></li>
               <li><a href="/relationshipastrology" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_relationship')}>Астрология Отношений</a></li>
             </ul>
           </div>
