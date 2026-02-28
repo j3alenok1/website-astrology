@@ -41,10 +41,10 @@ export function Methodology() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
-            Как проходит консультация
+            Как проходит консультация астролога
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            От первого контакта до ощутимого внутреннего результата — в ясной и бережной структуре работы.
+            От первого контакта до ощутимого внутреннего результата — в ясной и бережной структуре работы. Консультации в Алматы онлайн и очно.
           </p>
         </motion.div>
 

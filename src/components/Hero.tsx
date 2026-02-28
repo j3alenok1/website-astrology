@@ -14,9 +14,9 @@ export function Hero() {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-3xl md:text-4xl font-semibold mb-3 text-gray-200">
-            ASTRO by NDAUZH
+            Астролог в Алматы — ASTRO by NDAUZH
           </h1>
-          <p className="text-sm md:text-base text-purple-300 mb-2">Астролог в Алматы · Консультации онлайн и очно</p>
+          <p className="text-sm md:text-base text-purple-300 mb-2">Консультации по астрологии и Таро в Алматы — онлайн и очно</p>
           <p className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
             Астрология — твой ключ к лучшей жизни!
           </p>

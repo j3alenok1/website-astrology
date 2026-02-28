@@ -192,10 +192,10 @@ export function Services() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">
-            Методология работы
+            Консультация астролога и Таро в Алматы
           </h2>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Три взаимодополняющих инструмента, с которыми я работаю на консультациях
+            Три взаимодополняющих инструмента: астрология, Таро и психология — с которыми я работаю на консультациях в Алматы
           </p>
         </motion.div>
 

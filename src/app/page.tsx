@@ -11,12 +11,16 @@ import { Products } from '@/components/Products'
 import { Methodology } from '@/components/Methodology'
 import { BookingForm } from '@/components/BookingForm'
 import { FAQ } from '@/components/FAQ'
+import { SeoBlock } from '@/components/SeoBlock'
 import { Footer } from '@/components/Footer'
 import { NebulaBg } from '@/components/NebulaBg'
 import { PhotoBackground } from '@/components/PhotoBackground'
+import { HomeStructuredData } from '@/components/HomeStructuredData'
+
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden space-y-8">
+      <HomeStructuredData />
       <PhotoBackground />
       <NebulaBg />
       <Hero />
@@ -30,6 +34,7 @@ export default function Home() {
         <BookingForm />
       </Suspense>
       <FAQ />
+      <SeoBlock />
       <Footer />
     </main>
   )
