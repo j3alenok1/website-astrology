@@ -168,10 +168,18 @@ export async function POST(req: NextRequest) {
     }
 
     const invoice = await apipayRes.json()
+    const invoiceId = typeof invoice?.id === 'number' ? invoice.id : parseInt(String(invoice?.id || 0), 10)
+    if (!invoiceId) {
+      console.error('[KASPI] Invalid invoice response:', invoice)
+      return NextResponse.json(
+        { error: 'Некорректный ответ от платёжной системы. Попробуйте позже.' },
+        { status: 502 }
+      )
+    }
 
     await prisma.order.update({
       where: { id: order.id },
-      data: { apipayInvoiceId: invoice.id },
+      data: { apipayInvoiceId: invoiceId },
     })
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'

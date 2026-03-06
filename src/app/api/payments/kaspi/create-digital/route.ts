@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!process.env.DATABASE_URL) {
+      console.error('[KASPI] DATABASE_URL not set')
       return NextResponse.json(
         { error: 'База данных не настроена' },
         { status: 500 }
@@ -123,10 +124,18 @@ export async function POST(req: NextRequest) {
     }
 
     const invoice = await apipayRes.json()
+    const invoiceId = typeof invoice?.id === 'number' ? invoice.id : parseInt(String(invoice?.id || 0), 10)
+    if (!invoiceId) {
+      console.error('[KASPI] Invalid invoice response:', invoice)
+      return NextResponse.json(
+        { error: 'Некорректный ответ от платёжной системы. Попробуйте позже.' },
+        { status: 502 }
+      )
+    }
 
     await prisma.order.update({
       where: { id: order.id },
-      data: { apipayInvoiceId: invoice.id },
+      data: { apipayInvoiceId: invoiceId },
     })
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'
@@ -150,7 +159,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Внутренняя ошибка сервера' },
+      { error: 'Не удалось создать платёж. Проверьте данные и попробуйте снова или свяжитесь с нами.' },
       { status: 500 }
     )
   }
