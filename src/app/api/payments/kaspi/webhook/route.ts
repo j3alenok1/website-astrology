@@ -127,10 +127,6 @@ export async function POST(req: NextRequest) {
     }
 
     const invoice = body.invoice
-    if (invoice.status !== 'paid') {
-      return NextResponse.json({ received: true })
-    }
-
     const orderId = invoice.external_order_id
     if (!orderId) {
       console.error('[KASPI] Webhook: no external_order_id')
@@ -143,6 +139,28 @@ export async function POST(req: NextRequest) {
 
     if (!order) {
       console.error('[KASPI] Webhook: order not found', orderId)
+      return NextResponse.json({ received: true })
+    }
+
+    // ApiPay: pending, paid, cancelled, expired, partially_refunded, refunded
+    const isRefund = ['refunded', 'partially_refunded', 'refund', 'cancelled', 'canceled'].includes(
+      String(invoice.status || '').toLowerCase()
+    )
+
+    if (isRefund) {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: 'refunded' },
+      })
+      await prisma.lead.updateMany({
+        where: { orderId: order.id },
+        data: { paymentStatus: 'refunded' },
+      })
+      console.log('[KASPI] Refund processed for order', orderId)
+      return NextResponse.json({ received: true })
+    }
+
+    if (invoice.status !== 'paid') {
       return NextResponse.json({ received: true })
     }
 
@@ -164,6 +182,7 @@ export async function POST(req: NextRequest) {
         productTitle: order.productTitle,
         amount: order.amount,
         orderId: order.id,
+        paymentStatus: 'paid',
         utmSource: order.utmSource,
         utmMedium: order.utmMedium,
         utmCampaign: order.utmCampaign,

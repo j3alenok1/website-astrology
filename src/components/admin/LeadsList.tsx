@@ -18,6 +18,7 @@ interface Lead {
   productTitle?: string | null
   amount?: number | null
   orderId?: string | null
+  paymentStatus?: string | null
   utmSource?: string | null
   utmMedium?: string | null
   utmCampaign?: string | null
@@ -247,7 +248,11 @@ export function LeadsList() {
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    {lead.orderId ? (
+                    {lead.paymentStatus === 'refunded' ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-600/30 text-red-300 text-xs font-medium">
+                        Возврат
+                      </span>
+                    ) : lead.orderId ? (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-600/30 text-green-300 text-xs font-medium">
                         Оплачено
                       </span>
@@ -379,7 +384,9 @@ export function LeadsList() {
               </div>
               <div>
                 <strong>Статус оплаты:</strong>{' '}
-                {selectedLead.orderId ? (
+                {selectedLead.paymentStatus === 'refunded' ? (
+                  <span className="text-red-400 font-semibold">Возврат</span>
+                ) : selectedLead.orderId ? (
                   <span className="text-green-400 font-semibold">Оплачено</span>
                 ) : (
                   <span className="text-amber-400">Не оплачено</span>
