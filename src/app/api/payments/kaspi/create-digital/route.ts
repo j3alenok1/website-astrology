@@ -138,8 +138,8 @@ export async function POST(req: NextRequest) {
       data: { apipayInvoiceId: invoiceId },
     })
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'
-    const successUrl = `${baseUrl}/payment/success?orderId=${order.id}&provider=kaspi&product=${data.productSlug}`
+    const canonicalUrl = 'https://astrobyndauzh.com'
+    const successUrl = `${canonicalUrl}/payment/success?orderId=${order.id}&provider=kaspi&product=${data.productSlug}`
 
     return NextResponse.json({
       success: true,

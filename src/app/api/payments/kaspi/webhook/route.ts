@@ -5,20 +5,23 @@ import nodemailer from 'nodemailer'
 
 function verifyWebhookSignature(payload: string | Buffer, signature: string, secret: string): boolean {
   const data = typeof payload === 'string' ? Buffer.from(payload, 'utf8') : payload
-  const computedHex = crypto.createHmac('sha256', secret).update(data).digest('hex')
-  const expectedWithPrefix = 'sha256=' + computedHex
   const sig = (signature || '').trim()
-  try {
+
+  const tryVerify = (key: string | Buffer) => {
+    const computedHex = crypto.createHmac('sha256', key).update(data).digest('hex')
+    const expectedWithPrefix = 'sha256=' + computedHex
     if (sig === expectedWithPrefix) return true
     if (sig === computedHex) return true
-    return crypto.timingSafeEqual(Buffer.from(expectedWithPrefix, 'utf8'), Buffer.from(sig, 'utf8'))
-  } catch {
-    try {
-      return crypto.timingSafeEqual(Buffer.from(computedHex, 'utf8'), Buffer.from(sig, 'utf8'))
-    } catch {
-      return false
-    }
+    const sigWithoutPrefix = sig.startsWith('sha256=') ? sig.slice(7) : sig
+    if (sigWithoutPrefix === computedHex) return true
+    return false
   }
+
+  if (tryVerify(secret)) return true
+  if (secret.length === 64 && /^[a-fA-F0-9]+$/.test(secret)) {
+    if (tryVerify(Buffer.from(secret, 'hex'))) return true
+  }
+  return false
 }
 
 async function sendPaymentEmail(leadData: {
@@ -98,9 +101,23 @@ export async function POST(req: NextRequest) {
       if (!skipVerify) {
         return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
       }
-    } else if (!skipVerify && !verifyWebhookSignature(rawBody, signature, secret)) {
-      console.error('[KASPI] Invalid webhook signature', { bodyLen: rawBody.length, sigLen: signature.length })
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+    } else if (!skipVerify) {
+      let verified = verifyWebhookSignature(rawBody, signature, secret)
+      if (!verified) {
+        try {
+          const body = JSON.parse(rawBody)
+          const canonicalBody = JSON.stringify(body)
+          if (canonicalBody !== rawBody) {
+            verified = verifyWebhookSignature(canonicalBody, signature, secret)
+          }
+        } catch {
+          // keep verified false
+        }
+      }
+      if (!verified) {
+        console.error('[KASPI] Invalid webhook signature', { bodyLen: rawBody.length, sigLen: signature.length })
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+      }
     }
 
     const body = JSON.parse(rawBody)

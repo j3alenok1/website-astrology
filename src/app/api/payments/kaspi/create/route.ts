@@ -182,14 +182,14 @@ export async function POST(req: NextRequest) {
       data: { apipayInvoiceId: invoiceId },
     })
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'
+    const canonicalUrl = 'https://astrobyndauzh.com'
 
     return NextResponse.json({
       success: true,
       provider: 'kaspi',
       orderId: order.id,
       message: 'Счёт отправлен в приложение Kaspi.kz на ваш номер телефона. Оплатите в приложении.',
-      successUrl: `${baseUrl}/payment/success?orderId=${order.id}&provider=kaspi`,
+      successUrl: `${canonicalUrl}/payment/success?orderId=${order.id}&provider=kaspi`,
     })
   } catch (error) {
     console.error('[KASPI] Create error:', error)
