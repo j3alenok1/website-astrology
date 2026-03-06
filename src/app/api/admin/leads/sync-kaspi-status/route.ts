@@ -58,20 +58,30 @@ export async function POST(req: NextRequest) {
     }
 
     const json = await res.json()
+    console.log('[SYNC-KASPI] ApiPay response', {
+      invoiceId: order.apipayInvoiceId,
+      status: json?.status ?? json?.invoice?.status,
+      body: JSON.stringify(json).slice(0, 800),
+    })
     // ApiPay может вернуть { invoice: {...} } или плоский объект
     const invoice = json.invoice ?? json.data ?? json
     const rawStatus = invoice?.status ?? invoice?.invoice?.status ?? ''
     const status = String(rawStatus).toLowerCase().trim()
+    const isFullyRefunded = invoice?.is_fully_refunded === true || invoice?.is_fully_refunded === 'true'
+    const totalRefunded = parseFloat(String(invoice?.total_refunded ?? 0)) || 0
 
     if (!status) {
       console.error('[SYNC-KASPI] No status. invoiceId=', order.apipayInvoiceId, 'response=', JSON.stringify(json).slice(0, 500))
     }
 
-    // refunded, partially_refunded + возможные русские/альтернативные значения
-    const isRefund = [
-      'refunded', 'partially_refunded',
-      'возвращён', 'возвращен', 'частичный возврат',
-    ].some((s) => status.includes(s))
+    // ApiPay: status refunded ИЛИ is_fully_refunded / total_refunded > 0
+    const isRefund =
+      isFullyRefunded ||
+      totalRefunded > 0 ||
+      [
+        'refunded', 'partially_refunded',
+        'возвращён', 'возвращен', 'частичный возврат',
+      ].some((s) => status.includes(s))
 
     if (isRefund) {
       await prisma.order.update({
@@ -86,7 +96,7 @@ export async function POST(req: NextRequest) {
         ok: true,
         status: 'refunded',
         message: 'Статус обновлён: Возврат',
-        debug: { apipayInvoiceId: order.apipayInvoiceId, rawStatus },
+        debug: { apipayInvoiceId: order.apipayInvoiceId, rawStatus, isFullyRefunded, totalRefunded },
       })
     }
 
@@ -110,7 +120,7 @@ export async function POST(req: NextRequest) {
       ok: true,
       status: status || 'unknown',
       message: status ? `Текущий статус в ApiPay: ${rawStatus}` : 'Статус не определён — проверьте логи Vercel',
-      debug: { apipayInvoiceId: order.apipayInvoiceId, rawStatus, keys: json ? Object.keys(json) : [] },
+      debug: { apipayInvoiceId: order.apipayInvoiceId, rawStatus, isFullyRefunded, totalRefunded, keys: json ? Object.keys(invoice || {}) : [] },
     })
   } catch (error) {
     console.error('[SYNC-KASPI] Error:', error)

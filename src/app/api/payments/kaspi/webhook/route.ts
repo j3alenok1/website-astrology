@@ -121,6 +121,13 @@ export async function POST(req: NextRequest) {
     }
 
     const body = JSON.parse(rawBody)
+    console.log('[KASPI] Webhook received', {
+      event: body.event,
+      invoiceId: body.invoice?.id,
+      status: body.invoice?.status,
+      external_order_id: body.invoice?.external_order_id,
+      bodyPreview: rawBody.slice(0, 600),
+    })
 
     // ApiPay: invoice.status_changed (paid, cancelled) и invoice.refunded (возврат)
     const isInvoiceEvent = body.event === 'invoice.status_changed' || body.event === 'invoice.refunded'
