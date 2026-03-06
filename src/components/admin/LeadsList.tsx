@@ -46,7 +46,14 @@ export function LeadsList() {
         body: JSON.stringify({ leadId }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Ошибка')
+      if (!res.ok) throw new Error(data.error || data.details || 'Ошибка')
+      setLeads((prev) =>
+        prev.map((l) =>
+          l.id === leadId && data.status === 'refunded'
+            ? { ...l, paymentStatus: 'refunded' as const }
+            : l
+        )
+      )
       fetchLeads()
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Ошибка синхронизации')

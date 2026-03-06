@@ -57,8 +57,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const invoice = await res.json()
-    const status = String(invoice.status || '').toLowerCase()
+    const json = await res.json()
+    // ApiPay может вернуть { invoice: {...} } или плоский объект
+    const invoice = json.invoice ?? json.data ?? json
+    const status = String(invoice?.status ?? invoice?.invoice?.status ?? '').toLowerCase()
+
+    if (!status) {
+      console.error('[SYNC-KASPI] No status in ApiPay response:', JSON.stringify(json).slice(0, 300))
+    }
 
     const isRefund = ['refunded', 'partially_refunded'].includes(status)
 
@@ -75,6 +81,7 @@ export async function POST(req: NextRequest) {
         ok: true,
         status: 'refunded',
         message: 'Статус обновлён: Возврат',
+        invoiceStatus: status,
       })
     }
 
@@ -96,8 +103,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       ok: true,
-      status,
-      message: `Текущий статус в ApiPay: ${status}`,
+      status: status || 'unknown',
+      message: status ? `Текущий статус в ApiPay: ${status}` : 'Статус не определён — проверьте логи',
+      invoiceStatus: status,
     })
   } catch (error) {
     console.error('[SYNC-KASPI] Error:', error)
