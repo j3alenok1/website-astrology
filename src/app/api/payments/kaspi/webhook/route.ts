@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 
-function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
-  const computedHex = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+function verifyWebhookSignature(payload: string | Buffer, signature: string, secret: string): boolean {
+  const data = typeof payload === 'string' ? Buffer.from(payload, 'utf8') : payload
+  const computedHex = crypto.createHmac('sha256', secret).update(data).digest('hex')
   const expectedWithPrefix = 'sha256=' + computedHex
   const sig = (signature || '').trim()
   try {
@@ -87,11 +88,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    const rawBody = await req.text()
+    const rawBuffer = await req.arrayBuffer()
+    const rawBody = new TextDecoder('utf-8').decode(rawBuffer)
     const signature = (req.headers.get('x-webhook-signature') || req.headers.get('X-Webhook-Signature') || '').trim()
 
     if (!verifyWebhookSignature(rawBody, signature, secret)) {
-      console.error('[KASPI] Invalid webhook signature')
+      console.error('[KASPI] Invalid webhook signature', { bodyLen: rawBody.length, sigLen: signature.length })
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
