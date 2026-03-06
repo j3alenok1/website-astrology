@@ -26,7 +26,10 @@
 2. Свяжитесь с поддержкой (WhatsApp +7 708 516 74 89) для подключения Kaspi Business
 3. Получите API ключ в кабинете
 4. Добавьте в Vercel: `APIPAY_API_KEY`, `APIPAY_WEBHOOK_SECRET`
-5. В ApiPay.kz → Настройки → Webhooks: URL `https://astrobyndauzh.com/api/payments/kaspi/webhook`, событие `invoice.status_changed`
+5. В ApiPay.kz → Настройки → Webhooks:
+   - **URL:** `https://astrobyndauzh.com/api/payments/kaspi/webhook`
+   - **Событие:** `invoice.status_changed`
+   - **Подпись:** ApiPay отправляет заголовок `X-Webhook-Signature: sha256=<HMAC_SHA256(body, secret)>` — проверяется автоматически
 
 ---
 

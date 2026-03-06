@@ -16,4 +16,6 @@
 
 - **DATABASE_URL** — если используете Vercel Postgres, скопируйте строку подключения из панели и добавьте как `DATABASE_URL`
 - **APIPAY_API_KEY** — ключ из личного кабинета ApiPay.kz (заголовок X-API-Key)
+- **APIPAY_WEBHOOK_SECRET** — секрет для проверки подписи webhook (X-Webhook-Signature)
+- Webhook URL в ApiPay: `https://astrobyndauzh.com/api/payments/kaspi/webhook`
 - После добавления переменных сделайте **Redeploy** проекта
