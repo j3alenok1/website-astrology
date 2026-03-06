@@ -5,7 +5,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import ReCAPTCHA from 'react-google-recaptcha'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { getUTMParams, formatPhoneMask, isValidPhone } from '@/lib/utils'
 import { reachGoal } from '@/lib/metrika'
@@ -65,7 +65,6 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [showPaymentMessage, setShowPaymentMessage] = useState(false)
   const [utmParams, setUtmParams] = useState<Record<string, string | null>>({})
 
   const {
@@ -373,7 +372,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
 
             {selectedProduct ? (
               <div className="space-y-3">
-                {/алматы|almaty|алма-ата/i.test((watch('city') || '').trim()) && (
+                {/алматы|астана|шымкент|aktau|almaty|astana|shymkent|karaganda|aktobe/i.test((watch('city') || '').trim()) && (
                   <p className="text-sm text-purple-200">
                     💳 Казахстан: Kaspi Pay. Остальной мир: оплата картой.
                   </p>
@@ -394,15 +393,15 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                     type="button"
                     disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
                     onClick={() => {
-                    reachGoal('click_payment_intent', { product: selectedProduct.slug })
-                    setShowPaymentMessage(true)
-                  }}
+                      reachGoal('click_payment_intent', { product: selectedProduct.slug })
+                      handleSubmit(onPay)()
+                    }}
                     className="flex-1 px-5 py-2.5 text-sm bg-gradient-to-r from-green-600 to-emerald-600 
                              rounded-full text-white font-semibold hover:from-green-500 
                              hover:to-emerald-500 transition-all duration-300
                              disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {`Записаться и оплатить ${selectedProduct.price}`}
+                    {isSubmitting ? 'Переход к оплате...' : `Записаться и оплатить ${selectedProduct.price}`}
                   </button>
                 </div>
               </div>
@@ -423,48 +422,6 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
         </motion.div>
       </div>
 
-      <AnimatePresence>
-        {showPaymentMessage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowPaymentMessage(false)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              onClick={(e) => e.stopPropagation()}
-              className="max-w-md w-full rounded-2xl p-8 text-center
-                bg-gradient-to-br from-slate-800/95 to-slate-900/95
-                border border-white/10 shadow-2xl shadow-purple-500/20"
-            >
-              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 
-                flex items-center justify-center text-2xl" aria-hidden>
-                ✨
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Оплата скоро будет доступна
-              </h3>
-              <p className="text-gray-300 leading-relaxed mb-6">
-                Мы готовим удобный способ онлайн-оплаты. Пока вы можете оставить заявку через кнопку «Записаться» — я свяжусь с вами и уточню все детали.
-              </p>
-              <button
-                type="button"
-                onClick={() => setShowPaymentMessage(false)}
-                className="px-6 py-2.5 rounded-full font-semibold text-white
-                  bg-gradient-to-r from-purple-600 to-pink-600
-                  hover:from-purple-500 hover:to-pink-500 transition-all"
-              >
-                Понятно
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   )
 }
