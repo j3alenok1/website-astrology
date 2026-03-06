@@ -144,10 +144,10 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
     setIsSubmitting(true)
     setSubmitStatus('idle')
 
-    const isAlmaty = /алматы|almaty|алма-ата/i.test(data.city.trim())
+    const isKazakhstan = /алматы|астана|шымкент|актау|атырау|павлодар|караганда|усть-каменогорск|семей|тараз|кызылорда|костанай|актобе|туркестан|astana|shymkent|aktau|atyrau|pavlodar|karaganda|semey|taraz|kostanay|aktobe|almaty/i.test(data.city.trim())
 
     try {
-      const endpoint = isAlmaty ? '/api/payments/kaspi/create' : '/api/payments/create'
+      const endpoint = isKazakhstan ? '/api/payments/kaspi/create' : '/api/payments/create'
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -375,7 +375,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
               <div className="space-y-3">
                 {/алматы|almaty|алма-ата/i.test((watch('city') || '').trim()) && (
                   <p className="text-sm text-purple-200">
-                    💳 Оплата через Kaspi Pay — счёт придёт в приложение Kaspi.kz
+                    💳 Казахстан: Kaspi Pay. Остальной мир: оплата картой.
                   </p>
                 )}
                 <div className="flex flex-col sm:flex-row gap-2">

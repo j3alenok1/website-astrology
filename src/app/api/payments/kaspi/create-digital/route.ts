@@ -2,23 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-function isValidBirthDate(val: string): boolean {
-  if (!val) return false
-  const match = val.match(/^(\d{4})-(\d{2})-(\d{2})$/)
-  if (!match) return false
-  const [, year, month, day] = match
-  const yearNum = parseInt(year, 10)
-  const monthNum = parseInt(month, 10)
-  const dayNum = parseInt(day, 10)
-  if (yearNum < 1900 || yearNum > new Date().getFullYear()) return false
-  if (monthNum < 1 || monthNum > 12) return false
-  const d = new Date(val)
-  if (isNaN(d.getTime())) return false
-  if (d.getFullYear() !== yearNum || d.getMonth() + 1 !== monthNum || d.getDate() !== dayNum) return false
-  const today = new Date()
-  today.setHours(23, 59, 59, 999)
-  return d <= today
-}
+const DIGITAL_PRODUCTS = ['astrologiya-otnosheniy']
 
 /** Конвертация +7 (999) 999-99-99 → 87001234567 для ApiPay/Kaspi */
 function toKaspiPhone(contact: string): string {
@@ -28,53 +12,24 @@ function toKaspiPhone(contact: string): string {
   return '8' + ten.padStart(10, '0').slice(-10)
 }
 
-const createSchema = z.object({
+const createDigitalSchema = z.object({
   productSlug: z.string().min(1),
   productTitle: z.string().min(1),
   amount: z.number().int().positive(),
   name: z.string().min(2),
-  birthDate: z.string().min(1).refine(isValidBirthDate, 'Некорректная дата рождения'),
-  birthTime: z.string().optional(),
-  city: z.string().min(2),
-  birthCity: z.string().min(2).optional(),
   contact: z.string().min(5),
-  request: z.string().max(1500).optional(),
   consent: z.boolean().refine((v) => v === true),
   utmSource: z.string().nullable().optional(),
   utmMedium: z.string().nullable().optional(),
   utmCampaign: z.string().nullable().optional(),
   utmTerm: z.string().nullable().optional(),
   utmContent: z.string().nullable().optional(),
+  recaptchaToken: z.string().optional(),
 })
 
 function getClientIp(req: NextRequest): string {
   const forwarded = req.headers.get('x-forwarded-for')
   return forwarded ? forwarded.split(',')[0].trim() : req.headers.get('x-real-ip') || 'unknown'
-}
-
-/** Города Казахстана — Kaspi Pay доступен для всей страны */
-const KAZAKHSTAN_CITIES = [
-  'алматы', 'almaty', 'алма-ата', 'alma-ata',
-  'астана', 'astana', 'нур-султан', 'nur-sultan',
-  'шымкент', 'shymkent', 'шимкент',
-  'актау', 'aktau',
-  'атырау', 'atyrau',
-  'павлодар', 'pavlodar',
-  'караганда', 'karaganda', 'қарағанды',
-  'усть-каменогорск', 'ust-kamenogorsk', 'Өскемен',
-  'семей', 'semey', 'семей',
-  'тараз', 'taraz',
-  'кызылорда', 'kyzylorda',
-  'костанай', 'kostanay',
-  'уренгой', 'uralsk', 'орал',
-  'петропавловск', 'petropavl',
-  'актобе', 'aktobe', 'актёбе',
-  'туркестан', 'turkestan',
-]
-
-function isKazakhstan(city: string): boolean {
-  const normalized = city.trim().toLowerCase()
-  return KAZAKHSTAN_CITIES.some((v) => normalized.includes(v) || normalized === v)
 }
 
 export async function POST(req: NextRequest) {
@@ -95,11 +50,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const data = createSchema.parse(body)
+    const data = createDigitalSchema.parse(body)
 
-    if (!isKazakhstan(data.city)) {
+    if (!DIGITAL_PRODUCTS.includes(data.productSlug)) {
       return NextResponse.json(
-        { error: 'Оплата Kaspi Pay доступна для клиентов из Казахстана. Укажите город в Казахстане.' },
+        { error: 'Данный продукт не поддерживает оплату через Kaspi' },
         { status: 400 }
       )
     }
@@ -107,7 +62,7 @@ export async function POST(req: NextRequest) {
     const kaspiPhone = toKaspiPhone(data.contact)
     if (!kaspiPhone || kaspiPhone.length !== 11) {
       return NextResponse.json(
-        { error: 'Укажите корректный номер телефона для Kaspi Pay (формат: 8 XXX XXX XX XX)' },
+        { error: 'Укажите корректный номер телефона для Kaspi (формат: +7 XXX XXX XX XX)' },
         { status: 400 }
       )
     }
@@ -120,12 +75,12 @@ export async function POST(req: NextRequest) {
         currency: 'KZT',
         paymentProvider: 'kaspi',
         name: data.name,
-        birthDate: new Date(data.birthDate),
-        birthTime: data.birthTime,
-        city: data.city,
-        birthCity: data.birthCity,
+        birthDate: new Date('2000-01-01'),
+        birthTime: null,
+        city: 'Цифровой продукт',
+        birthCity: '—',
         contact: data.contact,
-        request: data.request ?? '',
+        request: '',
         consent: data.consent,
         utmSource: data.utmSource,
         utmMedium: data.utmMedium,
@@ -156,7 +111,7 @@ export async function POST(req: NextRequest) {
 
     if (!apipayRes.ok) {
       const errText = await apipayRes.text()
-      console.error('[KASPI] ApiPay error:', apipayRes.status, errText)
+      console.error('[KASPI] ApiPay digital error:', apipayRes.status, errText)
       await prisma.order.update({
         where: { id: order.id },
         data: { status: 'failed' },
@@ -175,16 +130,17 @@ export async function POST(req: NextRequest) {
     })
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://astrobyndauzh.com'
+    const successUrl = `${baseUrl}/payment/success?orderId=${order.id}&provider=kaspi&product=${data.productSlug}`
 
     return NextResponse.json({
       success: true,
       provider: 'kaspi',
       orderId: order.id,
-      message: 'Счёт отправлен в приложение Kaspi.kz на ваш номер телефона. Оплатите в приложении.',
-      successUrl: `${baseUrl}/payment/success?orderId=${order.id}&provider=kaspi`,
+      message: 'Счёт отправлен в приложение Kaspi.kz. Оплатите в приложении — после оплаты календарь будет доступен для скачивания.',
+      successUrl,
     })
   } catch (error) {
-    console.error('[KASPI] Create error:', error)
+    console.error('[KASPI] Create digital error:', error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
