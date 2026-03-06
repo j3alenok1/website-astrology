@@ -4,11 +4,19 @@ import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 
 function verifyWebhookSignature(payload: string, signature: string, secret: string): boolean {
-  const expected = 'sha256=' + crypto.createHmac('sha256', secret).update(payload).digest('hex')
+  const computedHex = crypto.createHmac('sha256', secret).update(payload).digest('hex')
+  const expectedWithPrefix = 'sha256=' + computedHex
+  const sig = (signature || '').trim()
   try {
-    return crypto.timingSafeEqual(Buffer.from(expected, 'utf8'), Buffer.from(signature, 'utf8'))
+    if (sig === expectedWithPrefix) return true
+    if (sig === computedHex) return true
+    return crypto.timingSafeEqual(Buffer.from(expectedWithPrefix, 'utf8'), Buffer.from(sig, 'utf8'))
   } catch {
-    return false
+    try {
+      return crypto.timingSafeEqual(Buffer.from(computedHex, 'utf8'), Buffer.from(sig, 'utf8'))
+    } catch {
+      return false
+    }
   }
 }
 
@@ -73,14 +81,14 @@ async function sendPaymentEmail(leadData: {
 
 export async function POST(req: NextRequest) {
   try {
-    const secret = process.env.APIPAY_WEBHOOK_SECRET
+    const secret = (process.env.APIPAY_WEBHOOK_SECRET || '').trim()
     if (!secret) {
       console.error('[KASPI] APIPAY_WEBHOOK_SECRET not set')
       return NextResponse.json({ received: true })
     }
 
     const rawBody = await req.text()
-    const signature = req.headers.get('x-webhook-signature') || ''
+    const signature = (req.headers.get('x-webhook-signature') || req.headers.get('X-Webhook-Signature') || '').trim()
 
     if (!verifyWebhookSignature(rawBody, signature, secret)) {
       console.error('[KASPI] Invalid webhook signature')
