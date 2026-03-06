@@ -34,6 +34,7 @@ export function Footer() {
               <li><a href="#services" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_service', { service: 'taro' })}>Таро</a></li>
               <li><a href="#services" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_service', { service: 'psychology' })}>Психология</a></li>
               <li><a href="/relationshipastrology" className="hover:text-purple-400 transition-colors" onClick={() => reachGoal('click_footer_relationship')}>Астрология Отношений</a></li>
+              <li><a href="/lunnye-cikly-otnosheniya" className="hover:text-purple-400 transition-colors">Лунные циклы и отношения</a></li>
             </ul>
           </div>
 

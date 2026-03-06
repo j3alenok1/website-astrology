@@ -7,9 +7,9 @@ import { Footer } from '@/components/Footer'
 import { BackToHomeLink } from '@/components/BackToHomeLink'
 
 export const metadata = {
-  title: 'Астрология Отношений — живая встреча в Алматы',
+  title: 'Календарь удачных дат для отношений — Астрология | ASTRO by NDAUZH',
   description:
-    'Живой мастер-класс по астрологии отношений в Алматы. Научитесь считывать натальную карту для гармоничных отношений. В подарок — календарь на год.',
+    'Узнайте заранее: когда говорить о важном, в какие дни избегать конфликтов и когда идеальный момент для свиданий и близости. Основано на лунных циклах.',
   alternates: { canonical: 'https://astrobyndauzh.com/relationshipastrology' },
 }
 

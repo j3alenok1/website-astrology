@@ -12,6 +12,7 @@ const pages: { path: string; changeFrequency: 'always' | 'hourly' | 'daily' | 'w
   { path: '/astrolog-russia', changeFrequency: 'weekly', priority: 0.9 },
   { path: '/astrolog-kazakhstan', changeFrequency: 'weekly', priority: 0.9 },
   { path: '/relationshipastrology', changeFrequency: 'weekly', priority: 0.8 },
+  { path: '/lunnye-cikly-otnosheniya', changeFrequency: 'monthly', priority: 0.75 },
   { path: '/privacy', changeFrequency: 'monthly', priority: 0.3 },
   { path: '/partners', changeFrequency: 'monthly', priority: 0.3 },
 ]
