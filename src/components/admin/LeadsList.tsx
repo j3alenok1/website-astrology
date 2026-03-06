@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { formatDate } from '@/lib/utils'
-import { Download, Eye, CheckCircle, XCircle, Clock, FileSpreadsheet, Trash2 } from 'lucide-react'
+import { Download, Eye, CheckCircle, XCircle, Clock, FileSpreadsheet, Trash2, RefreshCw } from 'lucide-react'
 
 interface Lead {
   id: string
@@ -35,6 +35,25 @@ export function LeadsList() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [deleting, setDeleting] = useState(false)
+  const [syncingId, setSyncingId] = useState<string | null>(null)
+
+  const syncKaspiStatus = async (leadId: string) => {
+    setSyncingId(leadId)
+    try {
+      const res = await fetch('/api/admin/leads/sync-kaspi-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Ошибка')
+      fetchLeads()
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Ошибка синхронизации')
+    } finally {
+      setSyncingId(null)
+    }
+  }
 
   const fetchLeads = useCallback(async () => {
     setLoading(true)
@@ -290,6 +309,16 @@ export function LeadsList() {
                       >
                         <Eye className="w-4 h-4 text-white" />
                       </button>
+                      {lead.orderId && (
+                        <button
+                          onClick={() => syncKaspiStatus(lead.id)}
+                          disabled={syncingId === lead.id}
+                          className="p-2 bg-cyan-600/80 rounded-lg hover:bg-cyan-500 transition-colors border border-cyan-400/30 disabled:opacity-50"
+                          title="Проверить статус в Kaspi"
+                        >
+                          <RefreshCw className={`w-4 h-4 text-white ${syncingId === lead.id ? 'animate-spin' : ''}`} />
+                        </button>
+                      )}
                       <button
                         onClick={() => deleteLeads([lead.id])}
                         disabled={deleting}
@@ -390,6 +419,16 @@ export function LeadsList() {
                   <span className="text-green-400 font-semibold">Оплачено</span>
                 ) : (
                   <span className="text-amber-400">Не оплачено</span>
+                )}
+                {selectedLead.orderId && (
+                  <button
+                    onClick={() => syncKaspiStatus(selectedLead.id)}
+                    disabled={syncingId === selectedLead.id}
+                    className="ml-2 px-2 py-1 text-sm bg-cyan-600/80 rounded hover:bg-cyan-500 disabled:opacity-50"
+                    title="Проверить статус в Kaspi"
+                  >
+                    {syncingId === selectedLead.id ? '…' : 'Проверить статус'}
+                  </button>
                 )}
               </div>
               <div>
