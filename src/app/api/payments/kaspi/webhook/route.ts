@@ -122,7 +122,9 @@ export async function POST(req: NextRequest) {
 
     const body = JSON.parse(rawBody)
 
-    if (body.event !== 'invoice.status_changed') {
+    // ApiPay: invoice.status_changed (paid, cancelled) и invoice.refunded (возврат)
+    const isInvoiceEvent = body.event === 'invoice.status_changed' || body.event === 'invoice.refunded'
+    if (!isInvoiceEvent) {
       return NextResponse.json({ received: true })
     }
 
