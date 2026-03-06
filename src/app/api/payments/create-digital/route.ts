@@ -30,16 +30,18 @@ export async function POST(req: NextRequest) {
     const secretKey = process.env.YOOKASSA_SECRET_KEY
 
     if (!shopId || !secretKey) {
+      console.error('[PAYMENTS] YooKassa не настроена: YOOKASSA_SHOP_ID или YOOKASSA_SECRET_KEY отсутствуют')
       return NextResponse.json(
-        { error: 'Платёжная система не настроена' },
-        { status: 500 }
+        { error: 'Оплата картой временно недоступна. Выберите Kaspi или свяжитесь с нами.' },
+        { status: 503 }
       )
     }
 
     if (!process.env.DATABASE_URL) {
+      console.error('[PAYMENTS] DATABASE_URL не настроен')
       return NextResponse.json(
-        { error: 'База данных не настроена' },
-        { status: 500 }
+        { error: 'Сервис временно недоступен. Попробуйте позже.' },
+        { status: 503 }
       )
     }
 

@@ -33,6 +33,8 @@
 
 ---
 
-**Webhook 401 Invalid signature:** Проверьте, что `APIPAY_WEBHOOK_SECRET` в Vercel — точная копия секрета из ApiPay (настройки ключа → Создать подпись). Без пробелов в начале/конце. Если ошибка остаётся — свяжитесь с ApiPay (WhatsApp +7 708 516 74 89) для проверки формата подписи.
+**Webhook 401 / sigLen: 0:** ApiPay не отправляет заголовок `X-Webhook-Signature`. В ApiPay: ключ «Сайт Марии» → **Создать подпись** — сохраните секрет и укажите его в `APIPAY_WEBHOOK_SECRET`. Для теста можно временно добавить `APIPAY_SKIP_WEBHOOK_VERIFY=true` (после отладки убрать).
+
+**404 на /payment/success:** Проверьте `NEXT_PUBLIC_SITE_URL` в Vercel — должен быть `https://astrobyndauzh.com`, не preview-URL.
 
 **Если что-то не работает:** проверьте логи в Vercel → **Logs** после попытки оплаты.

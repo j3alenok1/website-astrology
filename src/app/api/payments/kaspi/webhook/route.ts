@@ -92,7 +92,13 @@ export async function POST(req: NextRequest) {
     const rawBody = new TextDecoder('utf-8').decode(rawBuffer)
     const signature = (req.headers.get('x-webhook-signature') || req.headers.get('X-Webhook-Signature') || '').trim()
 
-    if (!verifyWebhookSignature(rawBody, signature, secret)) {
+    const skipVerify = process.env.APIPAY_SKIP_WEBHOOK_VERIFY === 'true'
+    if (signature.length === 0) {
+      console.error('[KASPI] Webhook signature is EMPTY - ApiPay не отправляет X-Webhook-Signature. Настройте подпись в ApiPay (Создать подпись).')
+      if (!skipVerify) {
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+      }
+    } else if (!skipVerify && !verifyWebhookSignature(rawBody, signature, secret)) {
       console.error('[KASPI] Invalid webhook signature', { bodyLen: rawBody.length, sigLen: signature.length })
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }

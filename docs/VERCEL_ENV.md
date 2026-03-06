@@ -14,8 +14,10 @@
 
 ## Важно
 
+- **NEXT_PUBLIC_SITE_URL** — укажите `https://astrobyndauzh.com` (основной домен). От этого зависит, куда ведёт ссылка после оплаты. Если указать preview-URL (astro-ndauzh.vercel.app), страница success может отдать 404.
 - **DATABASE_URL** — если используете Vercel Postgres, скопируйте строку подключения из панели и добавьте как `DATABASE_URL`
 - **APIPAY_API_KEY** — ключ из личного кабинета ApiPay.kz (заголовок X-API-Key)
-- **APIPAY_WEBHOOK_SECRET** — секрет для проверки подписи webhook (X-Webhook-Signature)
+- **APIPAY_WEBHOOK_SECRET** — секрет для проверки подписи webhook (X-Webhook-Signature). Если ApiPay не шлёт подпись (sigLen: 0) — настройте в ApiPay (Создать подпись).
+- **APIPAY_SKIP_WEBHOOK_VERIFY** — только для теста! `true` отключает проверку подписи. Не использовать в production.
 - Webhook URL в ApiPay: `https://astrobyndauzh.com/api/payments/kaspi/webhook`
 - После добавления переменных сделайте **Redeploy** проекта
