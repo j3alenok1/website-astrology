@@ -60,13 +60,18 @@ export async function POST(req: NextRequest) {
     const json = await res.json()
     // ApiPay может вернуть { invoice: {...} } или плоский объект
     const invoice = json.invoice ?? json.data ?? json
-    const status = String(invoice?.status ?? invoice?.invoice?.status ?? '').toLowerCase()
+    const rawStatus = invoice?.status ?? invoice?.invoice?.status ?? ''
+    const status = String(rawStatus).toLowerCase().trim()
 
     if (!status) {
-      console.error('[SYNC-KASPI] No status in ApiPay response:', JSON.stringify(json).slice(0, 300))
+      console.error('[SYNC-KASPI] No status. invoiceId=', order.apipayInvoiceId, 'response=', JSON.stringify(json).slice(0, 500))
     }
 
-    const isRefund = ['refunded', 'partially_refunded'].includes(status)
+    // refunded, partially_refunded + возможные русские/альтернативные значения
+    const isRefund = [
+      'refunded', 'partially_refunded',
+      'возвращён', 'возвращен', 'частичный возврат',
+    ].some((s) => status.includes(s))
 
     if (isRefund) {
       await prisma.order.update({
@@ -81,7 +86,7 @@ export async function POST(req: NextRequest) {
         ok: true,
         status: 'refunded',
         message: 'Статус обновлён: Возврат',
-        invoiceStatus: status,
+        debug: { apipayInvoiceId: order.apipayInvoiceId, rawStatus },
       })
     }
 
@@ -104,8 +109,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       status: status || 'unknown',
-      message: status ? `Текущий статус в ApiPay: ${status}` : 'Статус не определён — проверьте логи',
-      invoiceStatus: status,
+      message: status ? `Текущий статус в ApiPay: ${rawStatus}` : 'Статус не определён — проверьте логи Vercel',
+      debug: { apipayInvoiceId: order.apipayInvoiceId, rawStatus, keys: json ? Object.keys(json) : [] },
     })
   } catch (error) {
     console.error('[SYNC-KASPI] Error:', error)

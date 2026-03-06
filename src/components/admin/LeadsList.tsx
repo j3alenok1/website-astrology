@@ -55,6 +55,10 @@ export function LeadsList() {
         )
       )
       fetchLeads()
+      // Обратная связь: если не возврат — показать что вернул ApiPay (для диагностики)
+      if (data.status !== 'refunded') {
+        alert(data.message || `Статус: ${data.status}. Проверьте — возможно, это другая заявка.`)
+      }
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Ошибка синхронизации')
     } finally {

@@ -128,10 +128,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    const invoice = body.invoice
-    const orderId = invoice.external_order_id
+    const invoice = body.invoice ?? body.data?.invoice ?? body
+    const orderId = invoice?.external_order_id
     if (!orderId) {
-      console.error('[KASPI] Webhook: no external_order_id')
+      console.error('[KASPI] Webhook: no external_order_id', { event: body.event, hasInvoice: !!body.invoice })
       return NextResponse.json({ received: true })
     }
 
@@ -144,10 +144,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    // ApiPay: pending, paid, cancelled, expired, partially_refunded, refunded
-    const isRefund = ['refunded', 'partially_refunded', 'refund', 'cancelled', 'canceled'].includes(
-      String(invoice.status || '').toLowerCase()
-    )
+    // ApiPay: refunded, partially_refunded + альтернативы
+    const refundStatus = String(invoice?.status || '').toLowerCase()
+    const isRefund = [
+      'refunded', 'partially_refunded', 'refund', 'cancelled', 'canceled',
+      'возвращён', 'возвращен',
+    ].some((s) => refundStatus.includes(s))
 
     if (isRefund) {
       await prisma.order.update({
