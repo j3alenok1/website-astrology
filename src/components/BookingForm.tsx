@@ -65,6 +65,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [paymentError, setPaymentError] = useState<string | null>(null)
   const [utmParams, setUtmParams] = useState<Record<string, string | null>>({})
 
   const {
@@ -142,6 +143,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
 
     setIsSubmitting(true)
     setSubmitStatus('idle')
+    setPaymentError(null)
 
     try {
       const response = await fetch('/api/payments/create', {
@@ -168,15 +170,23 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
       })
 
       const json = await response.json()
-      if (!response.ok) throw new Error(json.error || 'Ошибка создания платежа')
+      if (!response.ok) {
+        setPaymentError(typeof json.error === 'string' ? json.error : 'Ошибка создания платежа')
+        setSubmitStatus('error')
+        setIsSubmitting(false)
+        return
+      }
 
       if (json.paymentUrl) {
         window.location.href = json.paymentUrl
       } else {
-        throw new Error('Не получена ссылка на оплату')
+        setPaymentError('Не получена ссылка на оплату')
+        setSubmitStatus('error')
+        setIsSubmitting(false)
       }
     } catch (error) {
       console.error('Payment error:', error)
+      setPaymentError(error instanceof Error ? error.message : 'Ошибка сети')
       setSubmitStatus('error')
       setIsSubmitting(false)
     }
@@ -360,8 +370,12 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
             )}
 
             {submitStatus === 'error' && (
-              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300">
-                Произошла ошибка. Пожалуйста, попробуйте еще раз или свяжитесь с нами напрямую.
+              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+                {paymentError ? (
+                  <p>{paymentError}</p>
+                ) : (
+                  <p>Произошла ошибка. Пожалуйста, попробуйте ещё раз или свяжитесь с нами напрямую.</p>
+                )}
               </div>
             )}
 

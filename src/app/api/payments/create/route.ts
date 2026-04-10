@@ -28,7 +28,10 @@ const createPaymentSchema = z.object({
   birthDate: z.string().min(1).refine(isValidBirthDate, 'Некорректная дата рождения'),
   birthTime: z.string().optional(),
   city: z.string().min(2),
-  birthCity: z.string().min(2).optional(),
+  birthCity: z.preprocess(
+    (v) => (v === '' || v === null || v === undefined ? undefined : v),
+    z.string().min(2).optional()
+  ),
   contact: z.string().min(5),
   request: z.string().max(1500).optional(),
   consent: z.boolean().refine((v) => v === true),
@@ -50,16 +53,18 @@ export async function POST(req: NextRequest) {
     const secretKey = process.env.YOOKASSA_SECRET_KEY
 
     if (!shopId || !secretKey) {
+      console.error('[PAYMENTS] YOOKASSA_SHOP_ID или YOOKASSA_SECRET_KEY не заданы в окружении')
       return NextResponse.json(
-        { error: 'Платёжная система не настроена' },
-        { status: 500 }
+        { error: 'Платёжная система не настроена на сервере (ЮKassa). Добавьте YOOKASSA_SHOP_ID и YOOKASSA_SECRET_KEY в Vercel.' },
+        { status: 503 }
       )
     }
 
     if (!process.env.DATABASE_URL) {
+      console.error('[PAYMENTS] DATABASE_URL не задан')
       return NextResponse.json(
         { error: 'База данных не настроена' },
-        { status: 500 }
+        { status: 503 }
       )
     }
 
@@ -113,19 +118,33 @@ export async function POST(req: NextRequest) {
     }
 
     const auth = Buffer.from(`${shopId}:${secretKey}`).toString('base64')
-    const yookassaRes = await fetch('https://api.yookassa.ru/v3/payments', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Idempotence-Key': order.id,
-        Authorization: `Basic ${auth}`,
-      },
-      body: JSON.stringify(yookassaBody),
-    })
+    let yookassaRes: Response
+    try {
+      yookassaRes = await fetch('https://api.yookassa.ru/v3/payments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Idempotence-Key': order.id,
+          Authorization: `Basic ${auth}`,
+        },
+        body: JSON.stringify(yookassaBody),
+      })
+    } catch (fetchErr) {
+      console.error('[PAYMENTS] YooKassa fetch failed:', fetchErr)
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: 'failed' },
+      })
+      return NextResponse.json(
+        { error: 'Не удалось связаться с платёжной системой. Попробуйте позже.' },
+        { status: 502 }
+      )
+    }
+
+    const rawBody = await yookassaRes.text()
 
     if (!yookassaRes.ok) {
-      const errText = await yookassaRes.text()
-      console.error('[PAYMENTS] YooKassa error:', yookassaRes.status, errText)
+      console.error('[PAYMENTS] YooKassa error:', yookassaRes.status, rawBody.slice(0, 500))
       await prisma.order.update({
         where: { id: order.id },
         data: { status: 'failed' },
@@ -136,7 +155,20 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const payment = await yookassaRes.json()
+    let payment: { id?: string; confirmation?: { confirmation_url?: string } }
+    try {
+      payment = JSON.parse(rawBody)
+    } catch {
+      console.error('[PAYMENTS] YooKassa: не JSON в ответе:', rawBody.slice(0, 200))
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: 'failed' },
+      })
+      return NextResponse.json(
+        { error: 'Некорректный ответ платёжной системы' },
+        { status: 502 }
+      )
+    }
     const confirmationUrl = payment.confirmation?.confirmation_url
 
     if (!confirmationUrl) {
@@ -157,12 +189,21 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
     })
   } catch (error) {
-    console.error('[PAYMENTS] Create error:', error)
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('[PAYMENTS] Create error:', msg, error)
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Ошибка валидации', details: error.errors },
         { status: 400 }
+      )
+    }
+
+    // Prisma / БД
+    if (msg.includes('Prisma') || msg.includes('database') || msg.includes('connect')) {
+      return NextResponse.json(
+        { error: 'Ошибка базы данных. Попробуйте позже.' },
+        { status: 503 }
       )
     }
 
@@ -172,3 +213,5 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+
+export const dynamic = 'force-dynamic'
