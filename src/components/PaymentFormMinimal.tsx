@@ -115,7 +115,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
       if (json.orderId) {
         if (!buyButtonId || !publishableKey) {
           setPaymentError(
-            'На сайте не заданы NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID и NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (Vercel → Environment Variables).'
+            'Не настроена оплата: в Vercel задайте STRIPE_PAYMENT_LINK (ссылка Payment Link из Stripe — так проще всего) или дублируйте её как NEXT_PUBLIC_STRIPE_PAYMENT_LINK. После изменения переменных сделайте Redeploy.'
           )
           setSubmitStatus('error')
           setIsSubmitting(false)

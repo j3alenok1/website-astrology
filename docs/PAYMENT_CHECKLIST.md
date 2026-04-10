@@ -1,14 +1,17 @@
 # Чеклист оплаты (Stripe)
 
-## 1. Vercel — переменные
+## 1. Vercel — переменные (вариант A: Payment Link)
 
 | Переменная | Где взять |
 |------------|-----------|
-| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Stripe → Payment Links → ссылка «Календарь» |
-| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` | *(опционально)* отдельная ссылка для консультаций |
+| **`STRIPE_PAYMENT_LINK`** | Stripe → Payment Links → ссылка на продукт «Календарь» (`buy.stripe.com/...`) |
+| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Та же ссылка (дублирование для клиента; опционально, если задан серверный ключ) |
+| `STRIPE_PAYMENT_LINK_BOOKING` / `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` | *(опционально)* отдельная ссылка для консультаций |
 | `STRIPE_SECRET_KEY` | Stripe → Developers → API keys (Secret) |
 | `STRIPE_WEBHOOK_SECRET` | Stripe → Developers → Webhooks → endpoint → Signing secret |
 | `DATABASE_URL` | Neon / Vercel Postgres и т.д. |
+
+Без `STRIPE_PAYMENT_LINK` (и без дубля `NEXT_PUBLIC_...`) потребуется пара **Buy Button** — см. [VERCEL_ENV.md](VERCEL_ENV.md) раздел «Альтернатива».
 
 ## 2. Stripe — webhook
 
