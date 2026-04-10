@@ -1,9 +1,15 @@
 # Настройка платежей
 
+> **Актуально:** Kaspi Pay отключён. **Календарь** — Stripe Payment Link (`NEXT_PUBLIC_STRIPE_PAYMENT_LINK` + webhook `/api/payments/stripe/webhook`). **Консультации** — ЮKassa (`/api/payments/create`).
+
 ## Как это работает
 
-- **Казахстан** → Kaspi Pay (счёт приходит в приложение Kaspi.kz)
-- **Весь мир** → ЮKassa (оплата картой Visa/Mastercard)
+- **Календарь (цифровой продукт)** → Stripe Checkout по Payment Link (после оплаты webhook создаёт заявку)
+- **Консультации** → ЮKassa (оплата картой Visa/Mastercard), город любой
+
+### Было (отключено): Kaspi Pay
+
+- ~~**Казахстан** → Kaspi Pay~~ — маршруты возвращают 410; см. историю git
 
 ### Kaspi Pay (Казахстан)
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
-import { CheckCircle, Smartphone, Download } from 'lucide-react'
+import { CheckCircle, Download } from 'lucide-react'
 import { reachMetrikaGoal } from '@/lib/utils'
 
 const DIGITAL_PRODUCT = 'astrologiya-otnosheniy'
@@ -17,9 +17,21 @@ export default function PaymentSuccessPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    setOrderId(params.get('orderId'))
+    let oid = params.get('orderId')
+    const sid = params.get('session_id')
     setProvider(params.get('provider'))
     setProduct(params.get('product'))
+
+    if (!oid && sid) {
+      fetch(`/api/payments/stripe-session?session_id=${encodeURIComponent(sid)}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.orderId) setOrderId(data.orderId)
+        })
+        .catch(() => {})
+    } else {
+      setOrderId(oid)
+    }
   }, [])
 
   // Цель Метрики для методички — конверсия (покупка 7777 ₸), для отдельной настройки рекламы
@@ -69,35 +81,20 @@ export default function PaymentSuccessPage() {
     tryDownload()
   }, [product, orderId])
 
-  const isKaspi = provider === 'kaspi'
   const isDigitalProduct = product === DIGITAL_PRODUCT
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
       <div className="max-w-md w-full text-center">
         <div className="glass-effect rounded-2xl p-8">
-          <div
-            className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${
-              isKaspi ? 'bg-red-500/20' : 'bg-green-500/20'
-            }`}
-          >
-            {isKaspi ? (
-              <Smartphone className="w-10 h-10 text-red-400" />
-            ) : (
-              <CheckCircle className="w-10 h-10 text-green-400" />
-            )}
+          <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center bg-green-500/20">
+            <CheckCircle className="w-10 h-10 text-green-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">
-            {isKaspi ? 'Счёт отправлен в Kaspi.kz' : 'Оплата прошла успешно'}
-          </h1>
+          <h1 className="text-2xl font-bold text-white mb-2">Оплата прошла успешно</h1>
           <p className="text-gray-300 mb-6">
-            {isKaspi
-              ? isDigitalProduct
-                ? 'Откройте приложение Kaspi.kz и оплатите счёт. После оплаты календарь появится ниже для скачивания.'
-                : 'Откройте приложение Kaspi.kz на телефоне и оплатите счёт. После оплаты я свяжусь с вами для уточнения деталей.'
-              : isDigitalProduct
-                ? 'Спасибо! Календарь «Астрология Отношений» скачивается автоматически.'
-                : 'Спасибо! Ваша заявка записана. Я свяжусь с вами в ближайшее время для уточнения деталей.'}
+            {isDigitalProduct
+              ? 'Спасибо! Календарь «Астрология Отношений» скачивается автоматически.'
+              : 'Спасибо! Ваша заявка записана. Я свяжусь с вами в ближайшее время для уточнения деталей.'}
           </p>
 
           {isDigitalProduct && orderId && (

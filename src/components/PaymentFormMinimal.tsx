@@ -10,7 +10,6 @@ import { getUTMParams, formatPhoneMask, isValidPhone, reachMetrikaGoal } from '@
 import { getProductBySlug } from '@/lib/products'
 
 const minimalSchema = z.object({
-  paymentMethod: z.enum(['kaspi', 'card']),
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
   contact: z
     .string()
@@ -38,7 +37,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
 
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm<MinimalFormData>({
     resolver: zodResolver(minimalSchema),
-    defaultValues: { paymentMethod: 'card', contact: '', consent: false },
+    defaultValues: { contact: '', consent: false },
   })
 
   useEffect(() => {
@@ -48,7 +47,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
   if (!selectedProduct) return null
 
   const onSubmit = async (data: MinimalFormData) => {
-    if (data.paymentMethod === 'card' && isRecaptchaActive && !recaptchaValue) {
+    if (isRecaptchaActive && !recaptchaValue) {
       setSubmitStatus('error')
       return
     }
@@ -60,14 +59,8 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
       reachMetrikaGoal('metodichka_pay_click')
     }
 
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-    const returnUrl = `${baseUrl}/payment/success?product=${productSlug}`
-
     try {
-      const endpoint = data.paymentMethod === 'kaspi'
-        ? '/api/payments/kaspi/create-digital'
-        : '/api/payments/create-digital'
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/payments/stripe-prepare-digital', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -77,9 +70,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
           name: data.name,
           contact: data.contact,
           consent: data.consent,
-          ...(data.paymentMethod === 'card' && {
-            recaptchaToken: isRecaptchaActive ? recaptchaValue : undefined,
-          }),
+          recaptchaToken: isRecaptchaActive ? recaptchaValue : undefined,
           utmSource: utmParams.utm_source,
           utmMedium: utmParams.utm_medium,
           utmCampaign: utmParams.utm_campaign,
@@ -93,8 +84,6 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
 
       if (json.paymentUrl) {
         window.location.href = json.paymentUrl
-      } else if (json.provider === 'kaspi') {
-        window.location.href = json.successUrl || `/payment/success?orderId=${json.orderId}&provider=kaspi&product=${productSlug}`
       } else {
         throw new Error('Не получена ссылка на оплату')
       }
@@ -119,32 +108,9 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-white font-medium mb-2">Способ оплаты *</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    {...register('paymentMethod')}
-                    value="card"
-                    className="w-4 h-4 accent-purple-500"
-                  />
-                  <span className="text-gray-300">Карта (весь мир)</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    {...register('paymentMethod')}
-                    value="kaspi"
-                    className="w-4 h-4 accent-purple-500"
-                  />
-                  <span className="text-gray-300">Kaspi (Казахстан)</span>
-                </label>
-              </div>
-              <p className="text-gray-500 text-xs mt-1">
-                Kaspi — счёт в приложении. Карта — оплата Visa/Mastercard.
-              </p>
-            </div>
+            <p className="text-gray-400 text-sm">
+              Оплата картой (Visa, Mastercard, Apple Pay и др.) через Stripe — безопасно.
+            </p>
 
             <div>
               <label className="block text-white font-medium mb-2">Имя *</label>
@@ -189,7 +155,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
             </div>
             {errors.consent && <p className="text-red-400 text-sm">{errors.consent.message}</p>}
 
-            {isRecaptchaActive && watch('paymentMethod') === 'card' && (
+            {isRecaptchaActive && (
               <div className="flex justify-center">
                 <ReCAPTCHA sitekey={siteKey} onChange={setRecaptchaValue} theme="dark" />
               </div>
@@ -203,7 +169,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
 
             <button
               type="submit"
-              disabled={isSubmitting || (watch('paymentMethod') === 'card' && isRecaptchaActive && !recaptchaValue)}
+              disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
               className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-white font-semibold hover:from-green-500 hover:to-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Переход к оплате...' : `Оплатить ${selectedProduct.price}`}

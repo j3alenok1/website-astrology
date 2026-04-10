@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     if (!shopId || !secretKey) {
       console.error('[PAYMENTS] YooKassa не настроена: YOOKASSA_SHOP_ID или YOOKASSA_SECRET_KEY отсутствуют')
       return NextResponse.json(
-        { error: 'Оплата картой временно недоступна. Выберите Kaspi или свяжитесь с нами.' },
+        { error: 'Оплата картой временно недоступна. Используйте Stripe или свяжитесь с нами.' },
         { status: 503 }
       )
     }

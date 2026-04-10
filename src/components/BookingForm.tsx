@@ -143,11 +143,8 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
     setIsSubmitting(true)
     setSubmitStatus('idle')
 
-    const isKazakhstan = /алматы|астана|шымкент|актау|атырау|павлодар|караганда|усть-каменогорск|семей|тараз|кызылорда|костанай|актобе|туркестан|astana|shymkent|aktau|atyrau|pavlodar|karaganda|semey|taraz|kostanay|aktobe|almaty/i.test(data.city.trim())
-
     try {
-      const endpoint = isKazakhstan ? '/api/payments/kaspi/create' : '/api/payments/create'
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/payments/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -175,8 +172,6 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
 
       if (json.paymentUrl) {
         window.location.href = json.paymentUrl
-      } else if (json.provider === 'kaspi') {
-        window.location.href = json.successUrl || `/payment/success?orderId=${json.orderId}&provider=kaspi`
       } else {
         throw new Error('Не получена ссылка на оплату')
       }
@@ -374,7 +369,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
               <div className="space-y-3">
                 {/алматы|астана|шымкент|aktau|almaty|astana|shymkent|karaganda|aktobe/i.test((watch('city') || '').trim()) && (
                   <p className="text-sm text-purple-200">
-                    💳 Казахстан: Kaspi Pay. Остальной мир: оплата картой.
+                    💳 Оплата банковской картой (ЮKassa).
                   </p>
                 )}
                 <div className="flex flex-col sm:flex-row gap-2">
