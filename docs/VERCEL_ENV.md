@@ -7,8 +7,11 @@
 | Переменная | Описание |
 |------------|----------|
 | `DATABASE_URL` | PostgreSQL |
-| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Stripe Payment Link для **календаря** (публичная ссылка) |
-| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` | *(опционально)* Отдельная ссылка для **консультаций** с нужной ценой в Stripe. Если не задана, используется `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` (тогда сумма в Stripe должна совпадать с продуктом или создайте отдельные ссылки в Dashboard). |
+| `STRIPE_PAYMENT_LINK` | Ссылка Payment Link (`buy.stripe.com/...`). Если не задана — на странице календаря показывается **Buy Button** (нужны `NEXT_PUBLIC_*` ниже). |
+| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Дублируйте ту же ссылку (для клиента, если понадобится) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Publishable key (Dashboard → Developers → API keys) — для встроенной Buy Button |
+| `NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID` | ID кнопки из **Buy button** в Stripe (начинается с `buy_btn_`) |
+| `STRIPE_PAYMENT_LINK_BOOKING` / `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` | *(опционально)* Отдельная ссылка для консультаций. Иначе используется `STRIPE_PAYMENT_LINK`. |
 | `STRIPE_SECRET_KEY` | Secret key (Dashboard → Developers → API keys) |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret вебхука `checkout.session.completed` → endpoint `/api/payments/stripe/webhook` |
 

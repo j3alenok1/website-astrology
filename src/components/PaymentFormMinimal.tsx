@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, createElement } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import ReCAPTCHA from 'react-google-recaptcha'
+import Script from 'next/script'
 import { motion } from 'framer-motion'
 import { getUTMParams, formatPhoneMask, isValidPhone, reachMetrikaGoal } from '@/lib/utils'
 import { getProductBySlug } from '@/lib/products'
@@ -24,6 +25,9 @@ interface PaymentFormMinimalProps {
   productSlug: string
 }
 
+const buyButtonId = process.env.NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
 export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
   const selectedProduct = getProductBySlug(productSlug)
   const disableRecaptcha = process.env.NEXT_PUBLIC_DISABLE_RECAPTCHA === 'true'
@@ -33,27 +37,42 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
   const [recaptchaValue, setRecaptchaValue] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [paymentError, setPaymentError] = useState<string | null>(null)
   const [utmParams, setUtmParams] = useState<Record<string, string | null>>({})
-
-  const { register, control, handleSubmit, watch, formState: { errors } } = useForm<MinimalFormData>({
-    resolver: zodResolver(minimalSchema),
-    defaultValues: { contact: '', consent: false },
-  })
+  const [orderIdForCheckout, setOrderIdForCheckout] = useState<string | null>(null)
+  const [stripeBuyScriptReady, setStripeBuyScriptReady] = useState(false)
 
   useEffect(() => {
     setUtmParams(getUTMParams())
   }, [])
+
+  useEffect(() => {
+    if (!orderIdForCheckout) setStripeBuyScriptReady(false)
+  }, [orderIdForCheckout])
+
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<MinimalFormData>({
+    resolver: zodResolver(minimalSchema),
+    defaultValues: { contact: '', consent: false },
+  })
 
   if (!selectedProduct) return null
 
   const onSubmit = async (data: MinimalFormData) => {
     if (isRecaptchaActive && !recaptchaValue) {
       setSubmitStatus('error')
+      setPaymentError('Пройдите проверку reCAPTCHA')
       return
     }
 
     setIsSubmitting(true)
     setSubmitStatus('idle')
+    setPaymentError(null)
+    setOrderIdForCheckout(null)
 
     if (productSlug === 'astrologiya-otnosheniy') {
       reachMetrikaGoal('metodichka_pay_click')
@@ -79,16 +98,41 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
         }),
       })
 
-      const json = await response.json()
-      if (!response.ok) throw new Error(json.error || 'Ошибка создания платежа')
+      const json = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        setPaymentError(typeof json.error === 'string' ? json.error : 'Ошибка создания платежа')
+        setSubmitStatus('error')
+        setIsSubmitting(false)
+        return
+      }
 
       if (json.paymentUrl) {
         window.location.href = json.paymentUrl
-      } else {
-        throw new Error('Не получена ссылка на оплату')
+        return
       }
+
+      if (json.orderId) {
+        if (!buyButtonId || !publishableKey) {
+          setPaymentError(
+            'На сайте не заданы NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID и NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (Vercel → Environment Variables).'
+          )
+          setSubmitStatus('error')
+          setIsSubmitting(false)
+          return
+        }
+        setOrderIdForCheckout(json.orderId)
+        setSubmitStatus('success')
+        setIsSubmitting(false)
+        return
+      }
+
+      setPaymentError('Не удалось получить ссылку на оплату. Попробуйте позже.')
+      setSubmitStatus('error')
+      setIsSubmitting(false)
     } catch (error) {
       console.error('Payment error:', error)
+      setPaymentError(error instanceof Error ? error.message : 'Произошла ошибка. Попробуйте ещё раз.')
       setSubmitStatus('error')
       setIsSubmitting(false)
     }
@@ -119,6 +163,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
                 type="text"
                 className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 placeholder="Ваше имя"
+                disabled={!!orderIdForCheckout}
               />
               {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
             </div>
@@ -136,6 +181,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
                     className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="+7 (999) 999-99-99"
                     onChange={(e) => field.onChange(formatPhoneMask(e.target.value))}
+                    disabled={!!orderIdForCheckout}
                   />
                 )}
               />
@@ -148,6 +194,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
                 type="checkbox"
                 id="consent"
                 className="mt-1 w-5 h-5 rounded border-white/20 bg-white/10 focus:ring-2 focus:ring-purple-500"
+                disabled={!!orderIdForCheckout}
               />
               <label htmlFor="consent" className="text-gray-300 text-sm">
                 Я согласен(а) на обработку персональных данных *
@@ -155,25 +202,47 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
             </div>
             {errors.consent && <p className="text-red-400 text-sm">{errors.consent.message}</p>}
 
-            {isRecaptchaActive && (
+            {isRecaptchaActive && !orderIdForCheckout && (
               <div className="flex justify-center">
                 <ReCAPTCHA sitekey={siteKey} onChange={setRecaptchaValue} theme="dark" />
               </div>
             )}
 
-            {submitStatus === 'error' && (
-              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
-                Произошла ошибка. Попробуйте ещё раз.
-              </div>
+            {submitStatus === 'error' && paymentError && (
+              <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">{paymentError}</div>
             )}
 
-            <button
-              type="submit"
-              disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
-              className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-white font-semibold hover:from-green-500 hover:to-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? 'Переход к оплате...' : `Оплатить ${selectedProduct.price}`}
-            </button>
+            {orderIdForCheckout && buyButtonId && publishableKey && (
+              <>
+                <Script
+                  src="https://js.stripe.com/v3/buy-button.js"
+                  strategy="afterInteractive"
+                  onLoad={() => setStripeBuyScriptReady(true)}
+                />
+                <div className="p-4 bg-emerald-500/10 border border-emerald-500/40 rounded-lg space-y-3">
+                  <p className="text-emerald-200 text-sm">
+                    Заказ создан. Нажмите «Buy» на кнопке Stripe ниже — после оплаты вы получите письмо.
+                  </p>
+                  {stripeBuyScriptReady &&
+                    createElement('stripe-buy-button', {
+                      key: orderIdForCheckout,
+                      'buy-button-id': buyButtonId,
+                      'publishable-key': publishableKey,
+                      'client-reference-id': orderIdForCheckout,
+                    })}
+                </div>
+              </>
+            )}
+
+            {!orderIdForCheckout && (
+              <button
+                type="submit"
+                disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                className="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full text-white font-semibold hover:from-green-500 hover:to-emerald-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Переход к оплате...' : `Оплатить ${selectedProduct.price}`}
+              </button>
+            )}
           </form>
         </motion.div>
       </div>

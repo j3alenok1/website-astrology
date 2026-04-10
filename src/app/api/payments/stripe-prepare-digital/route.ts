@@ -24,20 +24,19 @@ function getClientIp(req: NextRequest): string {
   return forwarded ? forwarded.split(',')[0].trim() : req.headers.get('x-real-ip') || 'unknown'
 }
 
-/** Создаёт заказ и возвращает URL Stripe Payment Link с client_reference_id */
+/** Опционально: редирект на Payment Link с client_reference_id (альтернатива Buy Button) */
+function getStripePaymentLink(): string | undefined {
+  return (
+    process.env.STRIPE_PAYMENT_LINK?.trim() ||
+    process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK?.trim()
+  )
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK?.trim()
-    if (!paymentLink) {
-      return NextResponse.json(
-        { error: 'Stripe Payment Link не настроен (NEXT_PUBLIC_STRIPE_PAYMENT_LINK)' },
-        { status: 500 }
-      )
-    }
-
     if (!process.env.DATABASE_URL) {
       return NextResponse.json(
-        { error: 'Сервис временно недоступен. Попробуйте позже.' },
+        { error: 'База данных не настроена (DATABASE_URL).' },
         { status: 503 }
       )
     }
@@ -96,21 +95,33 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const sep = paymentLink.includes('?') ? '&' : '?'
-    const paymentUrl = `${paymentLink}${sep}client_reference_id=${encodeURIComponent(order.id)}`
+    const paymentLink = getStripePaymentLink()
+    const paymentUrl = paymentLink
+      ? `${paymentLink}${paymentLink.includes('?') ? '&' : '?'}client_reference_id=${encodeURIComponent(order.id)}`
+      : undefined
 
     return NextResponse.json({
       success: true,
-      paymentUrl,
       orderId: order.id,
       provider: 'stripe',
+      ...(paymentUrl ? { paymentUrl } : {}),
     })
   } catch (error) {
-    console.error('[STRIPE] prepare-digital error:', error)
+    const msg = error instanceof Error ? error.message : String(error)
+    console.error('[STRIPE] prepare-digital error:', msg, error)
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Ошибка валидации', details: error.errors }, { status: 400 })
     }
-    return NextResponse.json({ error: 'Внутренняя ошибка сервера' }, { status: 500 })
+    if (msg.includes('Prisma') || msg.includes('database') || msg.includes('connect')) {
+      return NextResponse.json(
+        { error: 'Ошибка базы данных. Проверьте DATABASE_URL в Vercel.' },
+        { status: 503 }
+      )
+    }
+    return NextResponse.json(
+      { error: 'Внутренняя ошибка сервера', debug: process.env.NODE_ENV === 'development' ? msg : undefined },
+      { status: 500 }
+    )
   }
 }
 

@@ -55,13 +55,16 @@ function getClientIp(req: NextRequest): string {
 export async function POST(req: NextRequest) {
   try {
     const paymentLink =
+      process.env.STRIPE_PAYMENT_LINK_BOOKING?.trim() ||
       process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING?.trim() ||
+      process.env.STRIPE_PAYMENT_LINK?.trim() ||
       process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK?.trim()
     if (!paymentLink) {
+      console.error('[STRIPE] Нет ссылки для booking: STRIPE_PAYMENT_LINK_BOOKING / STRIPE_PAYMENT_LINK / …')
       return NextResponse.json(
         {
           error:
-            'Не задан Stripe Payment Link для консультаций. Добавьте NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING (или NEXT_PUBLIC_STRIPE_PAYMENT_LINK) в Vercel.',
+            'Не задан Stripe Payment Link. Добавьте STRIPE_PAYMENT_LINK или NEXT_PUBLIC_STRIPE_PAYMENT_LINK в Vercel.',
         },
         { status: 503 }
       )

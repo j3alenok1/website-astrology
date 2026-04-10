@@ -4,7 +4,7 @@
 
 | Поток | API | Переменная ссылки |
 |--------|-----|-------------------|
-| **Календарь** | `POST /api/payments/stripe-prepare-digital` | `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` |
+| **Календарь** | `POST /api/payments/stripe-prepare-digital` | `STRIPE_PAYMENT_LINK` / `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` **или** встроенная кнопка: `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` + `NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID` (без ссылки на редирект) |
 | **Консультации** | `POST /api/payments/stripe-prepare-booking` | `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` или та же `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` |
 
 После оплаты Stripe шлёт **`checkout.session.completed`** на  
