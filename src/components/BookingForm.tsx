@@ -146,7 +146,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
     setPaymentError(null)
 
     try {
-      const response = await fetch('/api/payments/create', {
+      const response = await fetch('/api/payments/stripe-prepare-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -383,7 +383,7 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
               <div className="space-y-3">
                 {/алматы|астана|шымкент|aktau|almaty|astana|shymkent|karaganda|aktobe/i.test((watch('city') || '').trim()) && (
                   <p className="text-sm text-purple-200">
-                    💳 Оплата банковской картой (ЮKassa).
+                    💳 Оплата картой через Stripe.
                   </p>
                 )}
                 <div className="flex flex-col sm:flex-row gap-2">

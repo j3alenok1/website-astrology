@@ -1,40 +1,32 @@
-# Чеклист: что нужно для работы оплаты
+# Чеклист оплаты (Stripe)
 
-## 1. Vercel — переменные окружения
-
-В **Vercel** → проект → **Settings** → **Environment Variables** добавьте:
+## 1. Vercel — переменные
 
 | Переменная | Где взять |
 |------------|-----------|
-| `DATABASE_URL` | PostgreSQL: Neon, Supabase, Vercel Postgres. Скопируйте Connection String |
-| `APIPAY_API_KEY` | ApiPay.kz → личный кабинет → API ключ |
-| `APIPAY_WEBHOOK_SECRET` | ApiPay.kz → Настройки → Webhooks → секретный ключ |
-| `YOOKASSA_SHOP_ID` | yookassa.ru → настройки магазина |
-| `YOOKASSA_SECRET_KEY` | yookassa.ru → настройки магазина |
+| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Stripe → Payment Links → ссылка «Календарь» |
+| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` | *(опционально)* отдельная ссылка для консультаций |
+| `STRIPE_SECRET_KEY` | Stripe → Developers → API keys (Secret) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe → Developers → Webhooks → endpoint → Signing secret |
+| `DATABASE_URL` | Neon / Vercel Postgres и т.д. |
 
-## 2. ApiPay.kz — настройка webhook
+## 2. Stripe — webhook
 
-1. Войдите на [apipay.kz](https://apipay.kz)
-2. **Настройки** → **Webhooks**
-3. Добавьте:
-   - **URL:** `https://astrobyndauzh.com/api/payments/kaspi/webhook`
-   - **Событие:** `invoice.status_changed`
-4. Сохраните — ApiPay покажет **секретный ключ**. Добавьте его в Vercel как `APIPAY_WEBHOOK_SECRET`
+- **URL:** `https://astrobyndauzh.com/api/payments/stripe/webhook`
+- **Событие:** `checkout.session.completed`
 
-## 3. Redeploy
+## 3. Stripe — страница после оплаты
 
-После добавления всех переменных:
-- **Vercel** → **Deployments** → три точки у последнего деплоя → **Redeploy**
+В настройках Payment Link укажите, например:
 
-## 4. Цифровой продукт (календарь)
+`https://astrobyndauzh.com/payment/success?product=astrologiya-otnosheniy&session_id={CHECKOUT_SESSION_ID}`
 
-Оплата календаря на `/relationshipastrology` работает через форму с выбором «Kaspi» или «Карта».  
-Кнопка «Записаться и оплатить» на главной убрана — осталась только «Записаться» (заявка без оплаты).
+Для консультаций можно без `product` или с другим query — главное `session_id`.
 
----
+## 4. Проверка
 
-**Webhook 401 / sigLen: 0:** ApiPay не отправляет заголовок `X-Webhook-Signature`. В ApiPay: ключ «Сайт Марии» → **Создать подпись** — сохраните секрет и укажите его в `APIPAY_WEBHOOK_SECRET`. Для теста можно временно добавить `APIPAY_SKIP_WEBHOOK_VERIFY=true` (после отладки убрать).
+1. Redeploy на Vercel  
+2. Календарь: форма → Stripe → оплата тестовой картой → заявка в админке  
+3. Консультации: то же с формы записи  
 
-**404 на /payment/success:** Проверьте `NEXT_PUBLIC_SITE_URL` в Vercel — должен быть `https://astrobyndauzh.com`, не preview-URL.
-
-**Если что-то не работает:** проверьте логи в Vercel → **Logs** после попытки оплаты.
+ЮKassa и Kaspi не используются.

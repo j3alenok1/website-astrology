@@ -1,25 +1,24 @@
 # Переменные окружения для Vercel
 
-Для работы оплаты и сайта на Vercel добавьте в **Settings → Environment Variables**:
+Добавьте в **Settings → Environment Variables**:
 
 ## Обязательные
 
 | Переменная | Описание |
 |------------|----------|
-| `DATABASE_URL` | Строка подключения PostgreSQL (Neon, Supabase, Vercel Postgres и т.д.) |
-| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Публичная ссылка Stripe Payment Link (календарь). Тест: `https://buy.stripe.com/test_...`, прод: `https://buy.stripe.com/...` |
-| `STRIPE_SECRET_KEY` | Секретный ключ из Stripe Dashboard (для webhook и API сессии) |
-| `STRIPE_WEBHOOK_SECRET` | Секрет подписи webhook (Signing secret в Stripe → Developers → Webhooks) |
-| `YOOKASSA_SHOP_ID` | ID магазина ЮKassa (консультации) |
-| `YOOKASSA_SECRET_KEY` | Секретный ключ ЮKassa |
+| `DATABASE_URL` | PostgreSQL |
+| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` | Stripe Payment Link для **календаря** (публичная ссылка) |
+| `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING` | *(опционально)* Отдельная ссылка для **консультаций** с нужной ценой в Stripe. Если не задана, используется `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` (тогда сумма в Stripe должна совпадать с продуктом или создайте отдельные ссылки в Dashboard). |
+| `STRIPE_SECRET_KEY` | Secret key (Dashboard → Developers → API keys) |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret вебхука `checkout.session.completed` → endpoint `/api/payments/stripe/webhook` |
 
 ## Важно
 
-- **NEXT_PUBLIC_SITE_URL** — укажите `https://astrobyndauzh.com` (основной домен). От этого зависит, куда ведёт ссылка после оплаты.
-- **Stripe Payment Link** — в настройках ссылки после оплаты укажите страницу успеха, например:  
-  `https://astrobyndauzh.com/payment/success?product=astrologiya-otnosheniy&session_id={CHECKOUT_SESSION_ID}`  
-  (подставьте свой slug продукта при необходимости).
-- **Webhook Stripe**: URL `https://astrobyndauzh.com/api/payments/stripe/webhook`, событие `checkout.session.completed`.
-- Kaspi Pay (ApiPay) в коде отключён; переменные `APIPAY_*` не требуются.
+- **NEXT_PUBLIC_SITE_URL** — `https://astrobyndauzh.com`
+- В Stripe Payment Link после оплаты:  
+  `https://astrobyndauzh.com/payment/success?product=...&session_id={CHECKOUT_SESSION_ID}`  
+  (для календаря — `product=astrologiya-otnosheniy`; для консультаций можно без `product` или свой слаг)
+- **Webhook:** `https://astrobyndauzh.com/api/payments/stripe/webhook`, событие `checkout.session.completed`
+- ЮKassa и Kaspi в коде отключены; переменные `YOOKASSA_*` и `APIPAY_*` не нужны.
 
-После добавления переменных сделайте **Redeploy** проекта.
+После изменений — **Redeploy**.

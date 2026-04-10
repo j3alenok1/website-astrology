@@ -57,7 +57,7 @@ model Order {
   amount            Int      // в тиынах (1/100 тенге)
   currency          String   @default("KZT")
   status            String   @default("pending") // pending, paid, failed, cancelled, refunded
-  paymentProvider   String?  // yookassa | kaspi | stripe
+  paymentProvider   String?  // stripe | kaspi | yookassa (legacy)
   yookassaPaymentId String?  @unique
   apipayInvoiceId   Int?     // Kaspi через ApiPay.kz
   
