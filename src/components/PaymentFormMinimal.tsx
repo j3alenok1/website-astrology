@@ -9,6 +9,7 @@ import Script from 'next/script'
 import { motion } from 'framer-motion'
 import { getUTMParams, formatPhoneMask, isValidPhone, reachMetrikaGoal } from '@/lib/utils'
 import { getProductBySlug } from '@/lib/products'
+import { SITE_PAYMENTS_DISABLED } from '@/lib/site-payments'
 
 const minimalSchema = z.object({
   name: z.string().min(2, 'Имя должно содержать минимум 2 символа'),
@@ -30,6 +31,7 @@ const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
 export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
   const selectedProduct = getProductBySlug(productSlug)
+
   const disableRecaptcha = process.env.NEXT_PUBLIC_DISABLE_RECAPTCHA === 'true'
   const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
   const isRecaptchaActive = !disableRecaptcha && !!siteKey
@@ -61,6 +63,28 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
   })
 
   if (!selectedProduct) return null
+
+  if (SITE_PAYMENTS_DISABLED) {
+    return (
+      <section id="payment" className="relative py-20 px-4 z-10">
+        <div className="max-w-md mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-effect rounded-2xl p-8"
+          >
+            <h2 className="text-2xl font-bold gradient-text mb-2">Оплата временно недоступна</h2>
+            <p className="text-gray-300 text-sm">
+              Онлайн-оплата на сайте отключена. Если нужен календарь — напишите нам в мессенджер или на почту.
+            </p>
+            <p className="text-gray-400 text-sm mt-4">
+              {selectedProduct.title} — {selectedProduct.price}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+    )
+  }
 
   const onSubmit = async (data: MinimalFormData) => {
     if (isRecaptchaActive && !recaptchaValue) {
@@ -115,7 +139,7 @@ export function PaymentFormMinimal({ productSlug }: PaymentFormMinimalProps) {
       if (json.orderId) {
         if (!buyButtonId || !publishableKey) {
           setPaymentError(
-            'Не настроена оплата: в Vercel задайте STRIPE_PAYMENT_LINK (ссылка Payment Link из Stripe — так проще всего) или дублируйте её как NEXT_PUBLIC_STRIPE_PAYMENT_LINK. После изменения переменных сделайте Redeploy.'
+            'Не удалось показать кнопку оплаты. Обновите страницу или напишите в поддержку.'
           )
           setSubmitStatus('error')
           setIsSubmitting(false)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { SITE_PAYMENTS_DISABLED } from '@/lib/site-payments'
 
 function isValidBirthDate(val: string): boolean {
   if (!val) return false
@@ -54,6 +55,10 @@ function getClientIp(req: NextRequest): string {
  */
 export async function POST(req: NextRequest) {
   try {
+    if (SITE_PAYMENTS_DISABLED) {
+      return NextResponse.json({ error: 'Оплата временно недоступна.' }, { status: 503 })
+    }
+
     const paymentLink =
       process.env.STRIPE_PAYMENT_LINK_BOOKING?.trim() ||
       process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BOOKING?.trim() ||

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { SITE_PAYMENTS_DISABLED } from '@/lib/site-payments'
 
 const DIGITAL_PRODUCTS = ['astrologiya-otnosheniy']
 
@@ -32,8 +33,23 @@ function getStripePaymentLink(): string | undefined {
   )
 }
 
+/** Встроенная Buy Button — если ссылки нет, без этих переменных оплата невозможна */
+function hasStripeBuyButtonEnv(): boolean {
+  return !!(
+    process.env.NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID?.trim() &&
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim()
+  )
+}
+
+const PAYMENT_NOT_CONFIGURED_MSG =
+  'Оплата не настроена: в Vercel укажите STRIPE_PAYMENT_LINK (ссылка Payment Link из Stripe) или настройте Buy Button (NEXT_PUBLIC_STRIPE_BUY_BUTTON_ID и NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY). Сохраните и сделайте Redeploy.'
+
 export async function POST(req: NextRequest) {
   try {
+    if (SITE_PAYMENTS_DISABLED) {
+      return NextResponse.json({ error: 'Оплата временно недоступна.' }, { status: 503 })
+    }
+
     if (!process.env.DATABASE_URL) {
       return NextResponse.json(
         { error: 'База данных не настроена (DATABASE_URL).' },
@@ -49,6 +65,11 @@ export async function POST(req: NextRequest) {
         { error: 'Данный продукт не поддерживает оплату через эту форму' },
         { status: 400 }
       )
+    }
+
+    const paymentLinkBase = getStripePaymentLink()
+    if (!paymentLinkBase && !hasStripeBuyButtonEnv()) {
+      return NextResponse.json({ error: PAYMENT_NOT_CONFIGURED_MSG }, { status: 503 })
     }
 
     const disableRecaptcha = process.env.DISABLE_RECAPTCHA === 'true'
@@ -95,9 +116,8 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    const paymentLink = getStripePaymentLink()
-    const paymentUrl = paymentLink
-      ? `${paymentLink}${paymentLink.includes('?') ? '&' : '?'}client_reference_id=${encodeURIComponent(order.id)}`
+    const paymentUrl = paymentLinkBase
+      ? `${paymentLinkBase}${paymentLinkBase.includes('?') ? '&' : '?'}client_reference_id=${encodeURIComponent(order.id)}`
       : undefined
 
     return NextResponse.json({

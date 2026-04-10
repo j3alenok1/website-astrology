@@ -10,6 +10,7 @@ import { useSearchParams } from 'next/navigation'
 import { getUTMParams, formatPhoneMask, isValidPhone } from '@/lib/utils'
 import { reachGoal } from '@/lib/metrika'
 import { getProductBySlug } from '@/lib/products'
+import { SITE_PAYMENTS_DISABLED } from '@/lib/site-payments'
 import { BirthDatePicker } from '@/components/BirthDatePicker'
 import type { LeadFormData } from '@/types'
 
@@ -381,9 +382,13 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
 
             {selectedProduct ? (
               <div className="space-y-3">
-                {/алматы|астана|шымкент|aktau|almaty|astana|shymkent|karaganda|aktobe/i.test((watch('city') || '').trim()) && (
-                  <p className="text-sm text-purple-200">
-                    💳 Оплата картой через Stripe.
+                {!SITE_PAYMENTS_DISABLED &&
+                  /алматы|астана|шымкент|aktau|almaty|astana|shymkent|karaganda|aktobe/i.test((watch('city') || '').trim()) && (
+                    <p className="text-sm text-purple-200">💳 Оплата картой через Stripe.</p>
+                  )}
+                {SITE_PAYMENTS_DISABLED && (
+                  <p className="text-sm text-amber-200/90">
+                    Онлайн-оплата на сайте временно отключена. Оставьте заявку — свяжемся для оплаты отдельно.
                   </p>
                 )}
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -398,20 +403,22 @@ export function BookingForm({ productSlugOverride }: BookingFormProps = {}) {
                   >
                     {isSubmitting ? 'Отправка...' : 'Записаться'}
                   </button>
-                  <button
-                    type="button"
-                    disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
-                    onClick={() => {
-                      reachGoal('click_payment_intent', { product: selectedProduct.slug })
-                      handleSubmit(onPay)()
-                    }}
-                    className="flex-1 px-5 py-2.5 text-sm bg-gradient-to-r from-green-600 to-emerald-600 
-                             rounded-full text-white font-semibold hover:from-green-500 
-                             hover:to-emerald-500 transition-all duration-300
-                             disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? 'Переход к оплате...' : `Записаться и оплатить ${selectedProduct.price}`}
-                  </button>
+                  {!SITE_PAYMENTS_DISABLED && (
+                    <button
+                      type="button"
+                      disabled={isSubmitting || (isRecaptchaActive && !recaptchaValue)}
+                      onClick={() => {
+                        reachGoal('click_payment_intent', { product: selectedProduct.slug })
+                        handleSubmit(onPay)()
+                      }}
+                      className="flex-1 px-5 py-2.5 text-sm bg-gradient-to-r from-green-600 to-emerald-600 
+                               rounded-full text-white font-semibold hover:from-green-500 
+                               hover:to-emerald-500 transition-all duration-300
+                               disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? 'Переход к оплате...' : `Записаться и оплатить ${selectedProduct.price}`}
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
