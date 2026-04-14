@@ -16,6 +16,19 @@ type TelegramSendResponse = {
 }
 
 /**
+ * Для личного чата API часто не принимает @username — нужен числовой `message.chat.id`
+ * из ответа getUpdates после /start. Каналы: `@имя_канала` или `-100…`.
+ */
+function normalizeTelegramChatId(raw: string): string | number {
+  const s = raw.trim()
+  if (/^-?\d+$/.test(s)) {
+    const n = Number(s)
+    if (Number.isSafeInteger(n)) return n
+  }
+  return s
+}
+
+/**
  * Дублирует заявку в Telegram (бот → канал или чат).
  * Нужны TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в env.
  */
@@ -42,6 +55,7 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
   }
 
   const text = lines.join('\n').slice(0, 4096)
+  const chatIdResolved = normalizeTelegramChatId(chatId)
 
   const url = `https://api.telegram.org/bot${encodeURIComponent(token)}/sendMessage`
   try {
@@ -49,7 +63,7 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: chatId,
+        chat_id: chatIdResolved,
         text,
         disable_web_page_preview: true,
       }),
@@ -66,18 +80,28 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
 
     // У Telegram часто HTTP 200, но в теле ok: false (например chat not found)
     if (!data.ok) {
+      const isChatNotFound =
+        data.description?.toLowerCase().includes('chat not found') ||
+        data.description?.toLowerCase().includes('user not found')
       console.error(
         '[LEADS] Telegram API:',
         data.error_code,
         data.description,
-        '| chat_id:',
+        '| env TELEGRAM_CHAT_ID:',
         chatId,
-        '| Подсказка: для лички пользователь должен написать боту /start; для канала — бот админ канала.'
+        isChatNotFound && chatId.startsWith('@')
+          ? '| Личка: в Vercel укажите числовой chat_id из getUpdates (см. docs/VERCEL_ENV.md), не @username.'
+          : '| Личка: /start боту; канал: бот — админ. Почта: проверьте SMTP_TO в Vercel.'
       )
       return
     }
 
-    console.log('[LEADS] Telegram: сообщение отправлено, message_id=', data.result?.message_id, 'chat:', chatId)
+    console.log(
+      '[LEADS] Telegram: сообщение отправлено, message_id=',
+      data.result?.message_id,
+      'chat:',
+      chatIdResolved
+    )
   } catch (e) {
     console.error('[LEADS] Telegram fetch:', e)
   }
