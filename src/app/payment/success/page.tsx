@@ -34,10 +34,10 @@ export default function PaymentSuccessPage() {
     }
   }, [])
 
-  // Цель Метрики для методички — конверсия (покупка 7777 ₸), для отдельной настройки рекламы
+  // Цель Метрики для методички — конверсия (покупка 3500 ₸), для отдельной настройки рекламы
   useEffect(() => {
     if (product === DIGITAL_PRODUCT && orderId) {
-      reachMetrikaGoal('metodichka_purchase', { order_price: 7777, currency: 'KZT' })
+      reachMetrikaGoal('metodichka_purchase', { order_price: 3500, currency: 'KZT' })
     }
   }, [product, orderId])
 

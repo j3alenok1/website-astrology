@@ -4,6 +4,9 @@ import { motion } from 'framer-motion'
 import { Calendar, Heart, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 
+const CALENDAR_WHATSAPP_URL =
+  'https://wa.clck.bar/77759098093?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BA%D1%83%D0%BF%D0%B8%D1%82%D1%8C%20%D0%BA%D0%B0%D0%BB%D0%B5%D0%BD%D0%B4%D0%B0%D1%80%D1%8C'
+
 export function RelationshipAstrologyContent() {
   return (
     <div className="relative z-10 py-12 px-4">
@@ -41,12 +44,14 @@ export function RelationshipAstrologyContent() {
           <p className="text-gray-300 mb-8">
             Начните выбирать правильные моменты для отношений.
           </p>
-          <Link
-            href="#payment"
+          <a
+            href={CALENDAR_WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg"
           >
             Получить календарь
-          </Link>
+          </a>
         </motion.div>
 
         {/* Блок «Знакомо?» */}
@@ -176,14 +181,16 @@ export function RelationshipAstrologyContent() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 bg-green-500/20 rounded-xl border border-green-500/30">
             <p className="text-green-200 font-medium text-center sm:text-left">
-              7 777 ₸ — календарь на год. Скачивание сразу после оплаты.
+              3 500 ₸ — календарь на год. Напишите в WhatsApp — оформим заказ.
             </p>
-            <Link
-              href="#payment"
+            <a
+              href={CALENDAR_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold hover:from-purple-500 hover:to-pink-500 transition-all shadow-lg shrink-0"
             >
               Получить календарь
-            </Link>
+            </a>
           </div>
         </motion.div>
       </div>

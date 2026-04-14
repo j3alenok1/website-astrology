@@ -52,7 +52,7 @@ export function getUTMParams(): Record<string, string | null> {
   }
 }
 
-/** Цель Яндекс.Метрики (для методички 7777 ₸ — отдельная настройка рекламы) */
+/** Цель Яндекс.Метрики (для методички 3500 ₸ — отдельная настройка рекламы) */
 export function reachMetrikaGoal(goalName: string, params?: Record<string, string | number>) {
   if (typeof window === 'undefined') return
   const w = window as { ym?: (id: number, a: string, ...args: unknown[]) => void }

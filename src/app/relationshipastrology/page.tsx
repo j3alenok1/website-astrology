@@ -1,8 +1,6 @@
-import { Suspense } from 'react'
 import { NebulaBg } from '@/components/NebulaBg'
 import { PhotoBackground } from '@/components/PhotoBackground'
 import { RelationshipAstrologyContent } from '@/components/RelationshipAstrologyContent'
-import { PaymentFormMinimal } from '@/components/PaymentFormMinimal'
 import { Footer } from '@/components/Footer'
 import { BackToHomeLink } from '@/components/BackToHomeLink'
 
@@ -24,10 +22,6 @@ export default function RelationshipAstrologyPage() {
       </div>
 
       <RelationshipAstrologyContent />
-
-      <Suspense fallback={<div id="payment" className="min-h-[400px]" />}>
-        <PaymentFormMinimal productSlug="astrologiya-otnosheniy" />
-      </Suspense>
 
       <Footer />
     </main>
