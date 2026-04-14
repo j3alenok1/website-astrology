@@ -116,7 +116,8 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
       const isChatNotFound =
         d.description?.toLowerCase().includes('chat not found') ||
         d.description?.toLowerCase().includes('user not found')
-      const isBotToBot = /bots can't send messages to bots/i.test(d.description ?? '')
+      // В description у Telegram бывает разный символ апострофа в "can't" — матчим по хвосту фразы
+      const isBotToBot = /send messages to bots/i.test(d.description ?? '')
 
       console.error(
         '[LEADS] Telegram API:',
