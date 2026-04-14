@@ -81,8 +81,22 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
   }
 
   if (!smtpConfig.host || !smtpConfig.auth.user || !smtpConfig.auth.pass) {
-    console.error('[LEADS] SMTP не настроен: добавьте SMTP_HOST, SMTP_USER, SMTP_PASSWORD в переменные окружения Vercel')
+    console.error(
+      '[LEADS] SMTP не настроен: задайте SMTP_HOST, SMTP_USER, SMTP_PASSWORD в Vercel (и при необходимости SMTP_TO, SMTP_FROM). Письмо не отправлено.'
+    )
     return
+  }
+
+  const mailTo = (process.env.SMTP_TO || smtpConfig.auth.user).trim()
+  const mailFrom = (process.env.SMTP_FROM || smtpConfig.auth.user).trim()
+
+  if (
+    smtpConfig.host?.toLowerCase().includes('gmail') &&
+    mailFrom.toLowerCase() !== smtpConfig.auth.user?.toLowerCase()
+  ) {
+    console.warn(
+      '[LEADS] SMTP: для Gmail поле «От» (SMTP_FROM) должно совпадать с SMTP_USER, иначе Gmail часто отклоняет отправку.'
+    )
   }
 
   try {
@@ -93,9 +107,9 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
     const [y, m, d] = (leadData.birthDate || '').split('-')
     const birthDateFormatted = y && m && d ? `${d}.${m}.${y}` : leadData.birthDate
 
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || smtpConfig.auth.user,
-      to: process.env.SMTP_TO || smtpConfig.auth.user,
+    const info = await transporter.sendMail({
+      from: mailFrom,
+      to: mailTo,
       subject: `✨ Новая заявка от ${leadData.name}`,
       html: `
 <!DOCTYPE html>
@@ -169,9 +183,17 @@ async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
 </html>
       `,
     })
+    console.log(
+      '[LEADS] Email отправлен:',
+      info.messageId ?? 'ok',
+      '| to:',
+      mailTo,
+      '| from:',
+      mailFrom
+    )
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error)
-    console.error('[LEADS] Ошибка отправки email:', msg)
+    console.error('[LEADS] Ошибка отправки email (получатель ' + mailTo + '):', msg)
     if (error instanceof Error && 'code' in error) {
       console.error('[LEADS] Код ошибки:', (error as { code?: string }).code)
     }
