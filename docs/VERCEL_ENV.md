@@ -50,6 +50,8 @@
 
 Для **личного чата** `@username` в API часто даёт `chat not found`, даже если `/start` был — используйте **числовой** `id`.
 
+Если в логах **`bots can't send messages to bots`** — в `TELEGRAM_CHAT_ID` попал **id другого бота** (часто путают с «Selected User» в сторонних ботах). Нужен `message.chat.id` из **getUpdates вашего** бота после `/start` с **личного** аккаунта Telegram (не бота).
+
 **Канал:** `TELEGRAM_CHAT_ID` = `@ваш_канал`, бот — **администратор** канала.
 
 ## SMTP (письма о заявках)

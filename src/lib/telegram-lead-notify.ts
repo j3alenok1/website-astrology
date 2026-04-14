@@ -116,6 +116,7 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
       const isChatNotFound =
         d.description?.toLowerCase().includes('chat not found') ||
         d.description?.toLowerCase().includes('user not found')
+      const isBotToBot = /bots can't send messages to bots/i.test(d.description ?? '')
 
       console.error(
         '[LEADS] Telegram API:',
@@ -125,9 +126,11 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
         chatIdRaw,
         '| chat_id в запросе:',
         chatIdResolved,
-        isChatNotFound && String(chatIdClean).startsWith('@')
-          ? '| Личка: числовой id из getUpdates, не @username (docs/VERCEL_ENV.md).'
-          : '| Проверьте /start этим аккаунтом у этого бота; для канала — бот админ.'
+        isBotToBot
+          ? '| ВАЖНО: этот chat_id — другой БОТ. Нужен id ЧЕЛОВЕКА: откройте Telegram с личного аккаунта → напишите ВАШЕМУ боту /start → getUpdates → поле message.chat.id (не id бота из сторонних ботов).'
+          : isChatNotFound && String(chatIdClean).startsWith('@')
+            ? '| Личка: числовой id из getUpdates, не @username (docs/VERCEL_ENV.md).'
+            : '| Проверьте /start этим аккаунтом у этого бота; для канала — бот админ.'
       )
 
       return {
