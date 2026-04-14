@@ -14,7 +14,7 @@ export async function GET() {
     )
   }
 
-  const to = process.env.SMTP_TO || 'j3alenok@gmail.com'
+  const to = process.env.SMTP_TO || 'mari.makk80@gmail.com'
   const user = process.env.SMTP_USER
   const pass = process.env.SMTP_PASSWORD
 

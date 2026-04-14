@@ -81,10 +81,10 @@ npm run dev
    - **Для email-уведомлений о заявках (обязательно для получения писем):**
      - `SMTP_HOST` = `smtp.gmail.com`
      - `SMTP_PORT` = `587`
-     - `SMTP_USER` = `j3alenok@gmail.com`
+     - `SMTP_USER` = `mari.makk80@gmail.com`
      - `SMTP_PASSWORD` = пароль приложения Gmail (16 символов, создать: [Google App Passwords](https://myaccount.google.com/apppasswords))
-     - `SMTP_FROM` = `j3alenok@gmail.com`
-     - `SMTP_TO` = `j3alenok@gmail.com`
+     - `SMTP_FROM` = `mari.makk80@gmail.com`
+     - `SMTP_TO` = `mari.makk80@gmail.com`
    - `RECAPTCHA_SECRET_KEY`, `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`
 3. Настройте PostgreSQL (Vercel Postgres или внешний)
 4. Запустите миграции: `npm run db:push`

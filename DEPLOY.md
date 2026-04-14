@@ -21,10 +21,10 @@
 4. **Добавьте переменные окружения** в Vercel (Settings → Environment Variables):
    - `SMTP_HOST` = smtp.gmail.com
    - `SMTP_PORT` = 587
-   - `SMTP_USER` = j3alenok@gmail.com
+   - `SMTP_USER` = mari.makk80@gmail.com
    - `SMTP_PASSWORD` = ваш пароль приложения Gmail
-   - `SMTP_FROM` = j3alenok@gmail.com
-   - `SMTP_TO` = j3alenok@gmail.com
+   - `SMTP_FROM` = mari.makk80@gmail.com
+   - `SMTP_TO` = mari.makk80@gmail.com
    - `NEXTAUTH_URL` = https://ваш-домен.vercel.app
    - `NEXTAUTH_SECRET` = сгенерируйте случайную строку
    - `NEXT_PUBLIC_SITE_URL` = https://ваш-домен.vercel.app

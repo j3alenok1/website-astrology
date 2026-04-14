@@ -71,7 +71,7 @@ export default function PrivacyPage() {
             <h2 className="text-2xl font-bold text-white mb-4">6. Контакты</h2>
             <p>
               По вопросам обработки персональных данных обращайтесь по адресу: 
-              j3alenok@gmail.com
+              mari.makk80@gmail.com
             </p>
           </section>
 
