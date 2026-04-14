@@ -8,6 +8,13 @@ export type TelegramLeadPayload = {
   request?: string | null
 }
 
+type TelegramSendResponse = {
+  ok?: boolean
+  description?: string
+  error_code?: number
+  result?: { message_id?: number }
+}
+
 /**
  * Дублирует заявку в Telegram (бот → канал или чат).
  * Нужны TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в env.
@@ -15,7 +22,12 @@ export type TelegramLeadPayload = {
 export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): Promise<void> {
   const token = process.env.TELEGRAM_BOT_TOKEN?.trim()
   const chatId = process.env.TELEGRAM_CHAT_ID?.trim()
-  if (!token || !chatId) return
+  if (!token || !chatId) {
+    console.warn(
+      '[LEADS] Telegram: пропуск — задайте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в Vercel и сделайте Redeploy.'
+    )
+    return
+  }
 
   const lines = [
     `У вас новая заявка с сайта! ${NOTIFY_MENTION}`,
@@ -42,11 +54,31 @@ export async function sendTelegramLeadNotification(lead: TelegramLeadPayload): P
         disable_web_page_preview: true,
       }),
     })
-    if (!res.ok) {
-      const errBody = await res.text()
-      console.error('[LEADS] Telegram API:', res.status, errBody)
+
+    const raw = await res.text()
+    let data: TelegramSendResponse = {}
+    try {
+      data = JSON.parse(raw) as TelegramSendResponse
+    } catch {
+      console.error('[LEADS] Telegram: не JSON в ответе', res.status, raw.slice(0, 500))
+      return
     }
+
+    // У Telegram часто HTTP 200, но в теле ok: false (например chat not found)
+    if (!data.ok) {
+      console.error(
+        '[LEADS] Telegram API:',
+        data.error_code,
+        data.description,
+        '| chat_id:',
+        chatId,
+        '| Подсказка: для лички пользователь должен написать боту /start; для канала — бот админ канала.'
+      )
+      return
+    }
+
+    console.log('[LEADS] Telegram: сообщение отправлено, message_id=', data.result?.message_id, 'chat:', chatId)
   } catch (e) {
-    console.error('[LEADS] Telegram:', e)
+    console.error('[LEADS] Telegram fetch:', e)
   }
 }

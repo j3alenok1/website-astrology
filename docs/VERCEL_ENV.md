@@ -40,4 +40,22 @@
 
 В тексте уведомления есть строка «У вас новая заявка с сайта!» и упоминание `@whitewidowz`, плюс кратко имя, контакт, продукт и запрос.
 
+**Личка `@whitewidowz`:** пользователь должен **написать боту** `/start` в Telegram, иначе API вернёт ошибку `chat not found`.  
+**Канал:** `TELEGRAM_CHAT_ID` = `@ваш_канал`, бот — **администратор** канала.
+
+## SMTP (письма о заявках)
+
+| Переменная | Пример |
+|------------|--------|
+| `SMTP_HOST` | `smtp.gmail.com` |
+| `SMTP_PORT` | `587` |
+| `SMTP_USER` | Gmail, с которого идёт отправка |
+| `SMTP_PASSWORD` | [пароль приложения](https://myaccount.google.com/apppasswords) (не обычный пароль) |
+| `SMTP_FROM` | Совпадает с `SMTP_USER` (для Gmail обязательно) |
+| `SMTP_TO` | Куда копировать заявки, например `mari.makk80@gmail.com` |
+
 После изменений — **Redeploy**.
+
+### Диагностика (Vercel → Logs → функция `/api/leads`)
+
+В логах ищите строки `[LEADS] Email отправлен`, `[LEADS] Telegram: сообщение отправлено` или текст ошибки `Ошибка отправки email`, `Telegram API:` с `description` от Telegram.

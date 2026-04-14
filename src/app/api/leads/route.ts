@@ -72,8 +72,10 @@ function checkRateLimit(key: string): boolean {
 async function sendEmailNotification(leadData: z.infer<typeof leadSchema>) {
   const smtpConfig = {
     host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
+    port: parseInt(process.env.SMTP_PORT || '587', 10),
     secure: false,
+    /** Gmail на 587 без этого иногда рвёт соединение на Vercel */
+    requireTLS: process.env.SMTP_HOST?.toLowerCase().includes('gmail') === true,
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASSWORD,
