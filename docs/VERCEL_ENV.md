@@ -31,4 +31,13 @@
 - **Webhook:** `https://astrobyndauzh.com/api/payments/stripe/webhook`, событие `checkout.session.completed`
 - ЮKassa и Kaspi в коде отключены; переменные `YOOKASSA_*` и `APIPAY_*` не нужны.
 
+## Опционально: Telegram (дубли заявок с формы)
+
+| Переменная | Описание |
+|------------|----------|
+| `TELEGRAM_BOT_TOKEN` | Токен бота от [@BotFather](https://t.me/BotFather) |
+| `TELEGRAM_CHAT_ID` | Куда слать: `@username` публичного канала или числовой `chat_id` (для канала бот должен быть **администратором**) |
+
+В тексте уведомления есть строка «У вас новая заявка с сайта!» и упоминание `@whitewidowz`, плюс кратко имя, контакт, продукт и запрос.
+
 После изменений — **Redeploy**.
