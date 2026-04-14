@@ -181,7 +181,7 @@ export function RelationshipAstrologyContent() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6 p-6 bg-green-500/20 rounded-xl border border-green-500/30">
             <p className="text-green-200 font-medium text-center sm:text-left">
-              3 500 ₸ — календарь на год. Напишите в WhatsApp — оформим заказ.
+              Стоимость календаря 3500 тг.
             </p>
             <a
               href={CALENDAR_WHATSAPP_URL}
