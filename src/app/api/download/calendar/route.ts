@@ -4,6 +4,9 @@ import path from 'path'
 import fs from 'fs'
 
 const DIGITAL_PRODUCT_SLUG = 'astrologiya-otnosheniy'
+
+/** Не статический при сборке: используется searchParams (orderId). */
+export const dynamic = 'force-dynamic'
 const FILE_NAME = 'relationship-calendar.pdf'
 
 export async function GET(req: NextRequest) {

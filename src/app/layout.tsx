@@ -120,6 +120,8 @@ export default function RootLayout({
         />
         <noscript>
           <div>
+            {/* next/image в noscript не подходит; внешний пиксель Метрики */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="https://mc.yandex.ru/watch/106988269" style={{ position: 'absolute', left: '-9999px' }} alt="" />
           </div>
         </noscript>
