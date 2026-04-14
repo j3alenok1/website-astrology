@@ -68,3 +68,13 @@
 ### Диагностика (Vercel → Logs → функция `/api/leads`)
 
 В логах ищите строки `[LEADS] Email отправлен`, `[LEADS] Telegram: сообщение отправлено` или текст ошибки `Ошибка отправки email`, `Telegram API:` с `description` от Telegram.
+
+### Проверка Telegram без формы
+
+1. В Vercel добавьте **`TELEGRAM_TEST_SECRET`** (длинная случайная строка), **Redeploy**.
+2. Вызовите **POST** `https://ваш-домен.com/api/telegram/test` с заголовком  
+   **`x-telegram-test-secret: <то же значение, что TELEGRAM_TEST_SECRET>`**
+3. В ответе JSON: **`getMe`** — токен бота валиден; **`ping`** — результат `sendMessage`.  
+4. Удалите `TELEGRAM_TEST_SECRET` после проверки.
+
+Убедитесь, что **`/start` написан именно тому боту**, чей токен в `TELEGRAM_BOT_TOKEN` (если ботов несколько — id из getUpdates должен быть от **этого** бота).

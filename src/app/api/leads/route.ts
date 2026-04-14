@@ -352,7 +352,12 @@ export async function POST(req: NextRequest) {
     try {
       await Promise.all([
         sendEmailNotification(validatedData),
-        sendTelegramLeadNotification(validatedData),
+        (async () => {
+          const tg = await sendTelegramLeadNotification(validatedData)
+          if (!tg.ok && !('skipped' in tg && tg.skipped)) {
+            console.error('[LEADS] Telegram итог:', tg)
+          }
+        })(),
         sendToGoogleSheets(validatedData),
         sendToCRM(validatedData),
       ])
