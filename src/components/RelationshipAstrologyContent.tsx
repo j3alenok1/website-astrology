@@ -162,14 +162,13 @@ export function RelationshipAstrologyContent() {
           </p>
         </motion.div>
 
-        {/* Блок цен + Финал */}
+        {/* Блок цены и CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
           className="glass-effect rounded-2xl p-8"
         >
-          <h2 className="text-xl font-bold text-white mb-6">Финал</h2>
           <p className="text-gray-300 mb-4">
             Иногда отношения рушатся не потому, что люди сказали что-то не то.
           </p>
