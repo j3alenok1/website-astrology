@@ -3,7 +3,8 @@ import { Inter } from 'next/font/google'
 import { Suspense } from 'react'
 import './globals.css'
 import { Analytics } from '@/components/Analytics'
-import { MetaPixel } from '@/components/MetaPixel'
+import { MetaPixelHead } from '@/components/MetaPixelHead'
+import { MetaPixelRouteTracker } from '@/components/MetaPixelRouteTracker'
 import { YandexMetrika } from '@/components/YandexMetrika'
 import { ScrollDepthTracker } from '@/components/ScrollDepthTracker'
 import { StructuredData } from '@/components/StructuredData'
@@ -125,15 +126,17 @@ export default function RootLayout({
             <img src="https://mc.yandex.ru/watch/106988269" style={{ position: 'absolute', left: '-9999px' }} alt="" />
           </div>
         </noscript>
+        {/* Meta Pixel: базовый код в head до </head> (рекомендация Meta Business) */}
+        <MetaPixelHead />
       </head>
       <body className={inter.className}>
+        <MetaPixelRouteTracker />
         {children}
         <Suspense fallback={null}>
           <Analytics />
           <YandexMetrika />
           <ScrollDepthTracker />
         </Suspense>
-        <MetaPixel />
       </body>
     </html>
   )
